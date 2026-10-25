@@ -1,0 +1,1076 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="calma">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Re-Late · Cuidado de la Salud Mental</title>
+<meta name="description" content="App local-first de salud mental: diario, calendario de depresión por gravedad, constantes, ideación autolítica, PHQ-9 y GAD-7, gráficas de progreso, histórico e informe exportable a PDF. Datos cifrados en tu dispositivo.">
+<meta name="author" content="Miguel Ángel Layunta López">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#2f7d63">
+<meta name="color-scheme" content="light dark">
+<link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+<link rel="alternate icon" href="icons/favicon-32.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon-180.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Re-Late">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<!-- Recomendado cuando el JS pase a app.js:
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data: blob:; style-src 'self' 'unsafe-inline'; script-src 'self'; connect-src 'self'; frame-src 'none'"> -->
+<style>
+:root{--fs:17px;--bg:#f6f4ef;--panel:#fff;--ink:#26302c;--muted:#5c6b64;--brand:#2f7d63;--brand-2:#4fa886;
+--accent:#c98a3d;--danger:#b4342e;--line:#e3ded4;--soft:#eef3ee;--shadow:0 10px 30px rgba(38,48,44,.08);--radius:16px;--maxw:1240px;
+--s0:rgba(47,125,99,.12);--s1:rgba(47,125,99,.28);--s2:rgba(201,138,61,.32);--s3:rgba(180,52,46,.30);--s4:rgba(180,52,46,.52)}
+[data-theme=noche]{--bg:#151b19;--panel:#1d2522;--ink:#e8ede9;--muted:#a9b7b0;--line:#2c3733;--soft:#222b28;--shadow:0 10px 30px rgba(0,0,0,.45)}
+[data-contrast=alto]{--bg:#fff;--panel:#fff;--ink:#000;--muted:#222;--brand:#08553a;--line:#000;--soft:#eee}
+*{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--ink);font-size:var(--fs);line-height:1.6;
+font-family:ui-sans-serif,system-ui,"Segoe UI",Roboto,Arial,sans-serif}button,input,select,textarea{font:inherit;color:inherit}a{color:var(--brand)}
+.app{max-width:var(--maxw);margin:0 auto;padding:14px}
+header.top{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;background:var(--panel);
+border:1px solid var(--line);border-radius:var(--radius);padding:10px 14px;box-shadow:var(--shadow);position:sticky;top:8px;z-index:40}
+.logo{display:flex;gap:10px;align-items:center;font-weight:800}.logo img{width:40px;height:40px;border-radius:12px;display:block}
+.nav{display:flex;gap:4px;flex-wrap:wrap}.nav button{background:none;border:1px solid transparent;padding:8px 11px;border-radius:12px;cursor:pointer;color:var(--muted)}
+.nav button[aria-current=true]{background:var(--soft);color:var(--ink);border-color:var(--line);font-weight:700}
+.tools{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.chip{border:1px solid var(--line);background:var(--panel);border-radius:999px;padding:6px 10px;cursor:pointer;font-size:.85em}
+.chip:hover{border-color:var(--brand)}
+main{display:grid;grid-template-columns:238px 1fr;gap:16px;margin-top:16px}
+@media(max-width:920px){main{grid-template-columns:1fr}.side{position:static!important}}
+.side{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:10px;box-shadow:var(--shadow);position:sticky;top:86px;align-self:start}
+.side a{display:flex;gap:10px;align-items:center;width:100%;text-align:left;padding:9px;border-radius:12px;cursor:pointer;color:var(--muted);text-decoration:none}
+.side a:hover,.side a.on{background:var(--soft);color:var(--ink);font-weight:700}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow);margin-bottom:16px}
+.card h2{margin:0 0 4px;font-size:1.25em}.card h3{margin:0 0 6px;font-size:1.05em}
+.sub{color:var(--muted);font-size:.92em;margin:0 0 14px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+@media(max-width:760px){.grid2,.grid4{grid-template-columns:1fr 1fr}}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.btn{background:var(--brand);color:#fff;border:0;border-radius:12px;padding:11px 16px;cursor:pointer;font-weight:700;text-decoration:none;display:inline-block}
+.btn:hover{filter:brightness(1.08)}.btn.ghost{background:var(--soft);color:var(--ink);border:1px solid var(--line);font-weight:600}
+.btn.danger{background:var(--danger)}.btn.sm{padding:7px 11px;font-size:.9em;border-radius:10px}
+label{display:block;font-weight:600;margin:10px 0 4px;font-size:.92em}
+input[type=text],input[type=password],input[type=number],input[type=date],input[type=datetime-local],select,textarea{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:var(--bg)}
+textarea{min-height:84px;resize:vertical}
+.moods{display:flex;gap:8px;flex-wrap:wrap}.moods button{width:52px;height:52px;border-radius:14px;border:2px solid var(--line);background:var(--bg);font-size:1.5em;cursor:pointer}
+.moods button.on{border-color:var(--brand);background:var(--soft);transform:scale(1.06)}
+.tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px}
+.tag{border:1px solid var(--line);background:var(--bg);border-radius:999px;padding:6px 11px;cursor:pointer;font-size:.85em}
+.tag.on{background:var(--brand);color:#fff;border-color:var(--brand)}
+.list{display:flex;flex-direction:column;gap:10px;margin-top:10px}
+.item{border:1px solid var(--line);border-radius:12px;padding:12px;background:var(--bg)}
+.item .meta,.meta{color:var(--muted);font-size:.82em}.item h4{margin:0 0 4px}
+.badge{display:inline-block;border-radius:999px;padding:2px 9px;font-size:.75em;font-weight:700;background:var(--soft);border:1px solid var(--line)}
+.badge.bad{background:var(--s4);border-color:transparent}.badge.warn{background:var(--s2);border-color:transparent}.badge.ok{background:var(--s1);border-color:transparent}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}@media(max-width:760px){.stats{grid-template-columns:repeat(2,1fr)}}
+.stat{border:1px solid var(--line);border-radius:12px;padding:12px;text-align:center;background:var(--bg)}
+.stat b{font-size:1.4em;display:block;color:var(--brand)}.stat span{color:var(--muted);font-size:.8em}
+.calbar{display:flex;gap:8px;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap}
+.calTitle{font-weight:800;text-transform:capitalize}
+.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+.cal .hd{font-size:.75em;color:var(--muted);text-align:center;font-weight:800;text-transform:uppercase}
+.cell{aspect-ratio:1/1;border:1px solid var(--line);border-radius:10px;background:var(--bg);padding:4px 5px;cursor:pointer;display:flex;flex-direction:column;justify-content:space-between;font-size:.8em;min-height:44px}
+.cell.empty{border:0;background:transparent;cursor:default}.cell.today{box-shadow:0 0 0 2px var(--brand)}
+.cell.s0{background:var(--s0)}.cell.s1{background:var(--s1)}.cell.s2{background:var(--s2)}.cell.s3{background:var(--s3)}.cell.s4{background:var(--s4)}
+.cell .dd{font-weight:700}.cell .sy{font-size:.62em;color:var(--muted);overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.legend{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;font-size:.8em;color:var(--muted)}
+.legend i{width:16px;height:16px;border-radius:5px;display:inline-block;margin-right:4px;vertical-align:-3px;border:1px solid var(--line)}
+.bar{height:9px;border-radius:999px;background:var(--soft);overflow:hidden;margin-top:4px}.bar>i{display:block;height:100%}
+.sevRow{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.sev{border:2px solid var(--line);background:var(--bg);border-radius:12px;padding:8px 4px;cursor:pointer;display:flex;flex-direction:column;gap:2px;align-items:center;font-size:.78em;font-weight:700}
+.sev small{color:var(--muted);font-weight:500;font-size:.85em}.sev.on{border-color:var(--ink)}
+.sev.s0{background:var(--s0)}.sev.s1{background:var(--s1)}.sev.s2{background:var(--s2)}.sev.s3{background:var(--s3)}.sev.s4{background:var(--s4)}
+.sos{position:fixed;right:18px;bottom:18px;z-index:60;background:var(--danger);color:#fff;border:0;border-radius:999px;padding:16px 20px;font-weight:900;cursor:pointer;box-shadow:0 12px 28px rgba(180,52,46,.42)}
+.overlay{position:fixed;inset:0;background:rgba(10,15,13,.55);display:none;place-items:center;z-index:70;padding:14px}
+.overlay.on{display:grid}.sheet{background:var(--panel);border-radius:20px;max-width:660px;width:100%;max-height:92vh;overflow:auto;padding:20px;border:1px solid var(--line)}
+.breath{width:210px;height:210px;border-radius:50%;margin:18px auto;display:grid;place-items:center;background:radial-gradient(circle,var(--soft),transparent 70%);border:3px solid var(--brand);transition:transform 4s ease-in-out;font-weight:800;color:var(--brand);text-align:center}
+.breath.in{transform:scale(1.25)}.breath.out{transform:scale(.8)}
+.steps{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}.steps .s{flex:1;min-width:150px;border:1px solid var(--line);border-radius:12px;padding:10px;background:var(--bg)}
+.steps .s.done{border-color:var(--brand);background:var(--soft)}
+.msg{max-width:78%;padding:10px 14px;border-radius:16px;margin:6px 0;background:var(--soft)}.msg.me{margin-left:auto;background:var(--brand);color:#fff}
+.lock{max-width:500px;margin:6vh auto}
+.note{border-left:4px solid var(--accent);background:var(--soft);padding:10px 14px;border-radius:0 12px 12px 0;font-size:.92em}
+.warn{border-left:4px solid var(--danger);background:var(--soft);padding:12px 14px;border-radius:0 12px 12px 0}
+.links{display:grid;gap:8px}.links a{display:flex;justify-content:space-between;gap:10px;border:1px solid var(--line);border-radius:12px;padding:10px 12px;text-decoration:none;color:var(--ink);background:var(--bg)}
+.links a:hover{border-color:var(--brand)}.links small{color:var(--muted)}
+footer{text-align:center;color:var(--muted);font-size:.85em;padding:22px}
+.hide{display:none!important}:focus-visible{outline:3px solid var(--brand-2);outline-offset:2px}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+[data-motion=off] *{transition:none!important;animation:none!important}
+/* ===== INFORME · TESTS · PDF ===== */
+.rep-head{display:flex;gap:14px;align-items:center;border-bottom:2px solid var(--brand);padding-bottom:12px;margin-bottom:14px}
+.rep-head img{width:58px;height:58px;border-radius:14px}
+.rep-meta{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;font-size:.88em;color:var(--muted);margin-bottom:14px}
+#repDoc h4{margin:20px 0 6px;font-size:1em;border-left:4px solid var(--brand);padding-left:8px}
+table.rep-t{width:100%;border-collapse:collapse;font-size:.85em;margin-top:6px}
+table.rep-t th,table.rep-t td{border:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}
+table.rep-t th{background:var(--soft)}
+.qitem{border:1px solid var(--line);border-radius:12px;padding:10px 12px;background:var(--bg);margin-bottom:8px}
+.qopts{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:8px}
+.qopts button{border:1px solid var(--line);background:var(--panel);border-radius:10px;padding:7px 4px;cursor:pointer;font-size:.8em}
+.qopts button.on{background:var(--brand);color:#fff;border-color:var(--brand)}
+.delta.better{color:var(--brand);font-weight:800}.delta.worse{color:var(--danger);font-weight:800}.delta.flat{color:var(--muted);font-weight:700}
+.rep-foot{margin-top:18px;border-top:1px solid var(--line);padding-top:10px;font-size:.8em;color:var(--muted)}
+@media print{
+ @page{margin:14mm}
+ html,body{background:#fff!important;font-size:12px}
+ .no-print,header.top,.side,.nav,.tools,.sos,.overlay,footer{display:none!important}
+ main{display:block!important;gap:0;margin:0}.app{max-width:none;padding:0}
+ .view{display:none!important}.view[data-v=informe]{display:block!important}
+ .card{box-shadow:none!important;border:1px solid #ddd!important;break-inside:avoid;page-break-inside:avoid;margin-bottom:10px}
+ #repWrap{border:0!important;padding:0!important;box-shadow:none!important}
+ *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
+ a{color:#000!important;text-decoration:none!important}
+}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- CONSENTIMIENTO -->
+  <div id="consent" class="lock card">
+    <div class="logo" style="margin-bottom:8px"><img src="icons/icon.svg" alt=""> Re‑Late</div>
+    <h2>Cuidado de la Salud Mental</h2>
+    <p class="sub">App <b>local-first</b>: tus datos no salen de este dispositivo. Se guardan cifrados con AES‑256‑GCM y una clave derivada de tu contraseña (PBKDF2, 150.000 iteraciones).</p>
+    <div class="note">Crea una <b>contraseña maestra</b>. Sin ella no se puede descifrar nada: <b>no hay recuperación posible</b> (mínimo conocimiento deliberado).</div>
+    <label>Contraseña maestra (mínimo 10 caracteres)</label><input type="password" id="cPass" autocomplete="new-password">
+    <label>Repite la contraseña</label><input type="password" id="cPass2" autocomplete="new-password">
+    <label style="margin-top:14px">Consentimiento informado digital (RGPD art. 7 y 9 · datos de salud)</label>
+    <div class="tags" id="consentTags"></div>
+    <label class="row" style="font-weight:600;margin-top:12px"><input type="checkbox" id="cAll" style="width:auto"> Acepto la política de privacidad y entiendo que esta app <b>no sustituye</b> la asistencia profesional.</label>
+    <div class="row" style="margin-top:14px"><button class="btn" id="cGo">Crear mi espacio privado</button><button class="btn ghost" id="cDemo">Modo demostración (sin clave)</button></div>
+    <p class="meta" id="cErr" style="color:var(--danger)"></p>
+    <details style="margin-top:10px"><summary>Información de tratamiento (art. 13‑14 RGPD)</summary>
+      <ul style="font-size:.9em;color:var(--muted)">
+        <li><b>Responsable:</b> tú misma persona. No hay servidor ni tercero con acceso.</li>
+        <li><b>Finalidades:</b> ánimo, ansiedad, sueño, días con depresión, constantes, tabaquismo, ideación autolítica, cuestionarios, informes y mensajes con tu profesional.</li>
+        <li><b>Base jurídica:</b> consentimiento explícito (art. 9.2.a RGPD).</li>
+        <li><b>Derechos:</b> acceso, rectificación, portabilidad (Exportar) y supresión (Borrar todo) desde «Privacidad».</li>
+        <li><b>Ubicación:</b> solo si tú la pides, sin histórico ni segundo plano.</li>
+      </ul></details>
+  </div>
+
+  <!-- BLOQUEO -->
+  <div id="lock" class="lock card hide">
+    <div class="logo" style="margin-bottom:8px"><img src="icons/icon.svg" alt=""> Re‑Late</div>
+    <h2>Espacio bloqueado</h2><p class="sub">Introduce tu contraseña maestra para descifrar tus datos.</p>
+    <label>Contraseña</label><input type="password" id="lPass" autocomplete="current-password">
+    <div class="row" style="margin-top:12px"><button class="btn" id="lGo">Desbloquear</button></div>
+    <p class="meta" id="lErr" style="color:var(--danger)"></p>
+  </div>
+
+  <!-- APP -->
+  <div id="shell" class="hide">
+    <header class="top">
+      <div class="logo"><img src="icons/icon.svg" alt="Re-Late"> Re‑Late <small style="font-weight:500;color:var(--muted)">salud mental</small></div>
+      <nav class="nav" id="navTop"></nav>
+      <div class="tools">
+        <button class="chip" id="tText" title="Tamaño de texto">Aa</button>
+        <button class="chip" id="tContrast" title="Alto contraste">◐</button>
+        <button class="chip" id="tTheme" title="Modo noche">☾</button>
+        <button class="chip" id="tMotion" title="Reducir movimiento">≈</button>
+        <button class="chip" id="tLock" title="Bloquear">🔒</button>
+      </div>
+    </header>
+
+    <main>
+      <aside class="side" id="navSide"></aside>
+      <section id="views">
+
+        <!-- RESUMEN -->
+        <div class="view" data-v="home">
+          <div class="card"><h2>Hola 👋</h2>
+            <p class="sub">Si algo te desborda, el botón <b>SOS</b> (tecla <b>S</b>) abre respiración, grounding, tus constantes y ayuda inmediata.</p>
+            <div class="stats" id="homeStats"></div>
+            <div class="row" style="margin-top:14px">
+              <button class="btn" data-open="calendario">📅 Registrar hoy</button>
+              <button class="btn ghost" data-open="diario">✎ Diario</button>
+              <button class="btn ghost" data-open="graficos">📈 Gráficas</button>
+              <button class="btn ghost" data-open="informe">📄 Informe</button>
+              <button class="btn ghost" data-open="historico">🗂 Histórico</button></div></div>
+          <div class="grid2">
+            <div class="card"><h3>Plan de seguridad</h3><p class="sub">Tenlo listo para los momentos difíciles.</p>
+              <div class="row"><button class="btn sm ghost" data-open="crisis">Abrir protocolo</button><button class="btn sm ghost" data-open="plan">Editar plan</button></div></div>
+            <div class="card"><h3>Ayuda verificada</h3><p class="sub">Aragón · España.</p>
+              <div class="row"><a class="btn sm danger" href="tel:024">024</a><a class="btn sm" href="tel:112">112</a>
+              <a class="btn sm ghost" href="tel:976232828">976 232 828</a></div></div>
+          </div>
+        </div>
+
+        <!-- DIARIO -->
+        <div class="view hide" data-v="diario">
+          <div class="card"><h2>Diario emocional</h2><p class="sub">Ánimo, ansiedad, sueño, energía y emociones. Alimenta el calendario, las gráficas, el informe y el histórico.</p>
+            <label>¿Cómo está tu ánimo hoy?</label><div class="moods" id="moodPick"></div>
+            <div class="grid4" style="margin-top:12px">
+              <div><label>Ansiedad <b id="anxV">5</b>/10</label><input type="range" id="anx" min="0" max="10" value="5"></div>
+              <div><label>Energía <b id="enV">5</b>/10</label><input type="range" id="en" min="0" max="10" value="5"></div>
+              <div><label>Horas de sueño</label><input type="number" id="slp" min="0" max="16" step="0.5" placeholder="7"></div>
+              <div><label>Cigarrillos hoy</label><input type="number" id="cig" min="0" placeholder="0"></div></div>
+            <label>Emociones presentes</label><div class="tags" id="emoPick"></div>
+            <label>Notas</label><textarea id="dNote" placeholder="¿Qué ha pasado? ¿Qué necesita tu cuerpo?"></textarea>
+            <div class="row" style="margin-top:10px"><button class="btn" id="dSave">Guardar entrada</button></div>
+            <div id="riskBox" class="warn hide" style="margin-top:12px"><b>Detente un momento.</b> Parece que hoy lo estás pasando muy mal. No tienes que poder con todo a solas.
+              <div class="row" style="margin-top:8px"><a class="btn sm danger" href="tel:024">Llamar 024</a><a class="btn sm" href="tel:112">112</a>
+              <button class="btn sm ghost" data-open="crisis">Protocolo de calma</button></div></div></div>
+          <div class="card"><h3>Últimas entradas</h3><div class="list" id="dList"></div></div>
+        </div>
+
+        <!-- CALENDARIO -->
+        <div class="view hide" data-v="calendario">
+          <div class="card"><h2>📅 Calendario de días con depresión</h2>
+            <p class="sub">Marca cada día por <b>gravedad</b> y síntomas. El mapa de color muestra el patrón del mes para ti y tu terapeuta. <b>No diagnostica</b>: describe.</p>
+            <div class="calbar">
+              <div class="row"><button class="chip" id="calPrev">‹</button><span class="calTitle" id="calTitle"></span><button class="chip" id="calNext">›</button></div>
+              <div class="row"><button class="chip" id="calToday">Hoy</button><select id="calJump" style="width:auto"></select>
+                <button class="btn sm ghost" id="calExport">CSV del mes</button></div></div>
+            <div class="cal" id="calGrid"></div>
+            <div class="legend"><span><i style="background:var(--s0)"></i>Sin síntomas</span><span><i style="background:var(--s1)"></i>Leve</span>
+              <span><i style="background:var(--s2)"></i>Moderada</span><span><i style="background:var(--s3)"></i>Grave</span>
+              <span><i style="background:var(--s4)"></i>Muy grave / riesgo</span><span><i style="background:var(--bg)"></i>Sin dato</span></div>
+            <div id="calAlert" class="warn hide" style="margin-top:14px"></div></div>
+          <div class="card"><h3>Resumen del mes</h3><div class="stats" id="depStats"></div><div id="depBars" style="margin-top:14px"></div></div>
+          <div class="card"><h3>Días registrados</h3><div class="list" id="depList"></div></div>
+        </div>
+
+        <!-- SALUD -->
+        <div class="view hide" data-v="salud">
+          <div class="card"><h2>❤️ Constantes vitales</h2>
+            <p class="sub">TA en mmHg y pulso en ppm. Normal &lt;120/80 · elevada 120‑129 · HTA g.1 130‑139/80‑89 · HTA g.2 ≥140/90.</p>
+            <div class="grid4">
+              <div><label>Sistólica</label><input type="number" id="vSys" placeholder="120"></div>
+              <div><label>Diastólica</label><input type="number" id="vDia" placeholder="80"></div>
+              <div><label>Pulso (ppm)</label><input type="number" id="vPpm" placeholder="72"></div>
+              <div><label>Fecha y hora</label><input type="datetime-local" id="vDate"></div></div>
+            <div class="row" style="margin-top:10px"><button class="btn" id="vSave">Registrar</button></div>
+            <div class="stats" id="vStats" style="margin-top:14px"></div>
+            <div id="vAlert" class="warn hide" style="margin-top:12px"></div></div>
+          <div class="card"><h2>🚬 Tabaquismo</h2><p class="sub">Índice tabáquico (<b>paquetes‑año</b>) = cigarrillos/día ÷ 20 × años fumando.</p>
+            <div class="grid4"><div><label>Cigarrillos/día</label><input type="number" id="sCig" value="0"></div>
+              <div><label>Años fumando</label><input type="number" id="sYrs" value="0" step="0.5"></div>
+              <div><label>€ cajetilla</label><input type="number" id="sPrice" value="6.5" step="0.05"></div>
+              <div><label>Fecha de dejarlo</label><input type="date" id="sQuit"></div></div>
+            <div class="row" style="margin-top:10px"><button class="btn ghost" id="sSave">Calcular y guardar</button></div>
+            <div class="stats" id="sStats" style="margin-top:14px"></div></div>
+          <div class="card"><h2>🌑 Ideas autolíticas</h2>
+            <p class="sub">Grado según la escala ordinal <b>C‑SSRS</b> (Columbia, versión española) y frecuencia semanal. Sirve para que te ayuden mejor.</p>
+            <label>Grado</label><div class="moods" id="idePick"></div><div class="sub" id="ideDesc" style="min-height:26px"></div>
+            <div class="grid2"><div><label>Episodios esta semana</label><input type="number" id="ideFreq" value="0"></div>
+              <div><label>Fecha</label><input type="date" id="ideDate"></div></div>
+            <label>Contexto / nota</label><textarea id="ideNote"></textarea>
+            <div class="row" style="margin-top:10px"><button class="btn" id="ideSave">Guardar</button></div>
+            <div id="ideAlert" class="warn hide" style="margin-top:12px"></div></div>
+          <div class="card"><h2>📍 Ubicación y emergencia</h2>
+            <p class="sub">Solo si tú lo pulsas. La posición <b>no se envía a ningún servidor</b>: la usas para dictarla al 112 o enviarla a un contacto.</p>
+            <div class="row"><button class="btn ghost" id="geoGo">Obtener mi ubicación</button><button class="btn ghost" id="geoCopy">Copiar coordenadas</button>
+              <button class="btn ghost" id="geoShare">Compartir</button>
+              <label class="chip" style="cursor:pointer"><input type="checkbox" id="geoKeep" style="width:auto"> guardar en el registro</label></div>
+            <div id="geoOut" class="item hide" style="margin-top:12px"></div>
+            <div class="note" style="margin-top:12px">El 112 puede pedirte una referencia: tener lat/long y precisión acelera la localización. No lo actives en segundo plano ni lo envíes a desconocidos.</div>
+            <div class="row" style="margin-top:14px"><a class="btn" href="tel:112" id="btn112" style="font-size:1.15em;padding:14px 22px">🚨 LLAMAR AL 112</a>
+              <a class="btn danger" href="tel:024">024 · Conducta suicida</a><a class="btn ghost" href="tel:976232828">976 232 828 · Zaragoza</a></div>
+            <div class="row" style="margin-top:10px"><input type="text" id="sosMsg" style="flex:1" placeholder="Mensaje para contacto de confianza">
+              <button class="btn sm" id="sosSend">Preparar aviso</button></div></div>
+        </div>
+
+        <!-- GRÁFICAS -->
+        <div class="view hide" data-v="graficos">
+          <div class="card"><h2>📈 Evolución</h2><p class="sub">Curvas calculadas <b>solo</b> con tus registros locales.</p>
+            <div class="row" style="justify-content:space-between">
+              <div class="tags" id="gMetrics"></div>
+              <select id="gRange" style="width:auto"><option value="30">30 días</option><option value="90">90 días</option><option value="180">6 meses</option><option value="365">1 año</option><option value="0">Todo</option></select></div>
+            <div id="gChart" style="margin-top:14px"></div>
+            <div class="stats" id="gStats" style="margin-top:14px"></div>
+            <div id="gTrend" class="note" style="margin-top:12px"></div></div>
+          <div class="card"><h3>📊 Progreso: periodo vs. periodo anterior</h3>
+            <p class="sub">Medias de los últimos 30 días frente a los 30 anteriores. En ánimo, energía y sueño <b>subir</b> es mejora; en el resto, <b>bajar</b> es mejora.</p>
+            <div id="progTable"></div><div style="margin-top:14px"><b>Ánimo medio por semana</b><div id="progWeeks"></div></div></div>
+          <div class="card"><h3>Comparativa (normalizada)</h3><p class="sub">Ánimo, ansiedad, depresión, ideación y tests en la misma escala 0‑100 para ver correlaciones.</p>
+            <div id="gCmp"></div></div>
+          <div class="card"><h3>Depresión por mes</h3><div id="gMonths"></div></div>
+        </div>
+
+        <!-- HISTÓRICO -->
+        <div class="view hide" data-v="historico">
+          <div class="card"><h2>🗂 Histórico por entradas</h2><p class="sub">Toda tu línea de tiempo: diario, depresión, ideación, constantes, TCC, tareas, citas, mensajes y cuestionarios.</p>
+            <div class="grid4">
+              <div><label>Tipo</label><select id="hType"><option value="">Todos</option></select></div>
+              <div><label>Desde</label><input type="date" id="hFrom"></div>
+              <div><label>Hasta</label><input type="date" id="hTo"></div>
+              <div><label>Buscar texto</label><input type="text" id="hQ" placeholder="insomnio, ansiedad, 024…"></div></div>
+            <div class="row" style="margin-top:12px"><button class="btn sm" id="hApply">Filtrar</button><button class="btn sm ghost" id="hCsv">Exportar CSV</button>
+              <button class="btn sm ghost" id="hClear">Quitar filtros</button><span class="meta" id="hCount"></span></div>
+            <div class="list" id="hList" style="margin-top:14px"></div></div>
+          <div class="card"><h3>Resumen por tipo</h3><div id="hAgg"></div></div>
+        </div>
+
+        <!-- INFORME -->
+        <div class="view hide" data-v="informe">
+          <div class="card no-print"><h2>🧪 Cuestionarios validados</h2>
+            <p class="sub"><b>PHQ‑9</b> (depresión, 9 ítems) y <b>GAD‑7</b> (ansiedad, 7 ítems) sobre las <b>últimas 2 semanas</b>. Instrumentos de autoinforme de uso libre: <b>no sustituyen</b> la entrevista clínica, pero sí miden el progreso.</p>
+            <div class="tags"><button class="tag on" id="tabPhq">PHQ‑9 · depresión</button><button class="tag" id="tabGad">GAD‑7 · ansiedad</button></div>
+            <div id="testItems" style="margin-top:12px"></div>
+            <div class="row" style="margin-top:12px"><button class="btn" id="testSave">Guardar test</button><span class="meta" id="testNow"></span></div>
+            <div id="testHist" style="margin-top:14px"></div></div>
+
+          <div class="card no-print"><h2>📄 Informe para la consulta</h2>
+            <p class="sub">Compone un documento con tus datos del periodo elegido y lo exportas a PDF.</p>
+            <div class="grid4">
+              <div><label>Tu nombre (opcional)</label><input type="text" id="rName"></div>
+              <div><label>Profesional</label><input type="text" id="rProf"></div>
+              <div><label>Centro / servicio</label><input type="text" id="rCenter"></div>
+              <div><label>Periodo</label><select id="rRange">
+                <option value="7">Últimos 7 días</option><option value="30" selected>Últimos 30 días</option>
+                <option value="90">Últimos 90 días</option><option value="180">Últimos 6 meses</option>
+                <option value="0">Todo el histórico</option></select></div></div>
+            <label>Qué incluir</label><div class="tags" id="rOpts"></div>
+            <label>Observaciones para el profesional</label>
+            <textarea id="rNotes" placeholder="Lo que quiero que vea en la consulta…"></textarea>
+            <div class="row" style="margin-top:12px"><button class="btn" id="rBuild">Vista previa</button>
+              <button class="btn danger" id="rPdf">🖨 Guardar PDF</button>
+              <button class="btn ghost" id="rCsv">CSV del informe</button></div>
+            <div class="note" style="margin-top:12px">En Windows/Linux, al imprimir marca <b>«Gráficos de fondo»</b> para que salgan los colores de gravedad. El PDF <b>no va cifrado</b>: guárdalo en una carpeta privada y entrégalo solo a tu profesional.</div></div>
+
+          <div class="card" id="repWrap"><div id="repDoc"><p class="sub">Pulsa «Vista previa» para componer el informe.</p></div></div>
+        </div>
+
+        <!-- TCC -->
+        <div class="view hide" data-v="tcc">
+          <div class="card"><h2>Registro de pensamientos (TCC)</h2><p class="sub">Reestructuración cognitiva guiada.</p>
+            <div class="grid2"><div><label>Situación</label><input type="text" id="tSit"></div>
+              <div><label>Emoción + %</label><input type="text" id="tEmo" placeholder="Ansiedad 80%"></div>
+              <div><label>Pensamiento automático</label><textarea id="tAuto"></textarea></div>
+              <div><label>Distorsión</label><select id="tDist"></select></div>
+              <div><label>Evidencia a favor</label><textarea id="tPro"></textarea></div>
+              <div><label>Evidencia en contra</label><textarea id="tCon"></textarea></div>
+              <div><label>Pensamiento alternativo</label><textarea id="tAlt"></textarea></div>
+              <div><label>Emoción tras reevaluar (%)</label><input type="number" id="tRe" min="0" max="100" value="50"></div></div>
+            <div class="row" style="margin-top:10px"><button class="btn" id="tSave">Guardar ficha</button></div></div>
+          <div class="card"><h3>Tareas del psicólogo</h3>
+            <div class="grid2"><div><label>Tarea</label><input type="text" id="taskT"></div><div><label>Fecha límite</label><input type="date" id="taskD"></div></div>
+            <div class="row" style="margin-top:10px"><button class="btn sm" id="taskAdd">Añadir tarea</button></div>
+            <div class="list" id="taskList"></div></div>
+          <div class="card"><h3>Fichas guardadas</h3><div class="list" id="tList"></div></div>
+        </div>
+
+        <!-- CRISIS -->
+        <div class="view hide" data-v="crisis">
+          <div class="card"><h2>🛟 Protocolo de calma paso a paso</h2><p class="sub">Sigue los pasos en orden, sin prisa. Si hay peligro inmediato, llama al <b>112</b>.</p>
+            <div class="steps" id="crisisSteps"></div><div id="crisisBody"></div></div>
+          <div class="grid2">
+            <div class="card"><h3>Respiración guiada</h3><div class="breath" id="breath">Listo</div>
+              <div class="row"><button class="btn sm" data-b="478">4‑7‑8</button><button class="btn sm" data-b="box">Caja 4‑4‑4‑4</button><button class="btn sm ghost" id="bStop">Parar</button></div></div>
+            <div class="card"><h3>Grounding 5‑4‑3‑2‑1</h3><div id="ground"></div></div></div>
+          <div class="card"><h3>Ayuda inmediata</h3>
+            <div class="row"><a class="btn danger" href="tel:024">024 · 24 h</a><a class="btn" href="tel:112">112</a><a class="btn ghost" href="tel:976232828">Teléfono de la Esperanza · Zaragoza</a></div>
+            <div class="row" style="margin-top:10px"><button class="btn sm ghost" id="crisisGeo">📍 Añadir mi ubicación al aviso</button><span class="meta" id="crisisGeoOut"></span></div></div>
+        </div>
+
+        <!-- SESIÓN -->
+        <div class="view hide" data-v="sesion">
+          <div class="card"><h2>Sesión con tu profesional</h2><p class="sub">Videollamada cifrada + mensajería E2E.</p>
+            <label>Clave de sesión compartida (la misma que tu terapeuta)</label><input type="password" id="e2eKey" placeholder="frase acordada, p. ej. girasol-aragon-2026">
+            <div class="row" style="margin-top:10px"><button class="btn" id="vcGo">🎥 Videollamada cifrada</button><button class="btn ghost" id="e2eSet">Activar cifrado del chat</button></div>
+            <p class="note" style="margin-top:10px">En producción: auto‑aloja Jitsi/Meet con E2EE y no dependas de servicios de terceros.</p></div>
+          <div class="card"><h3>Chat con el profesional</h3><p class="sub">Los mensajes se cifran con AES‑GCM antes de guardarse.</p>
+            <div id="chatBox" style="max-height:320px;overflow:auto;border:1px solid var(--line);border-radius:12px;padding:10px;background:var(--bg)"></div>
+            <div class="row" style="margin-top:10px"><input type="text" id="chatIn" placeholder="Escribe un mensaje…"><button class="btn" id="chatSend">Enviar</button>
+              <label class="chip" style="cursor:pointer"><input type="checkbox" id="simPro" style="width:auto"> simular terapeuta</label></div></div>
+          <div class="card"><h3>Agenda y recordatorios</h3>
+            <div class="grid2"><div><label>Cita</label><input type="text" id="apT"></div><div><label>Fecha y hora</label><input type="datetime-local" id="apD"></div></div>
+            <div class="row" style="margin-top:10px"><button class="btn sm" id="apAdd">Añadir cita</button><button class="btn sm ghost" id="apPerm">Activar notificaciones</button></div>
+            <div class="list" id="apList"></div></div>
+        </div>
+
+        <!-- RECURSOS -->
+        <div class="view hide" data-v="recursos">
+          <div class="card"><h2>Recursos oficiales y validados</h2><p class="sub">Enlaces verificados; prioriza siempre fuentes oficiales.</p>
+            <h3>🇪🇸 Estatal</h3><div class="links" id="lEst"></div>
+            <h3 style="margin-top:14px">📍 Aragón / Zaragoza</h3><div class="links" id="lArag"></div>
+            <h3 style="margin-top:14px">🔒 Privacidad · RGPD</h3><div class="links" id="lRGPD"></div>
+            <h3 style="margin-top:14px">🧘 Mindfulness y apoyo</h3><div class="links" id="lMind"></div></div>
+          <div class="card"><h3>Mindfulness guiado</h3><p class="sub">Pausa breve de atención plena.</p>
+            <div class="row"><button class="btn sm" id="mindGo">Comenzar (2 min)</button><span id="mindT" class="sub"></span></div></div>
+        </div>
+
+        <!-- PLAN -->
+        <div class="view hide" data-v="plan">
+          <div class="card"><h2>Mi plan de seguridad</h2><p class="sub">Redáctalo en un momento tranquilo. Se guarda cifrado.</p>
+            <label>Señales de alarma que reconozco</label><textarea id="pSign"></textarea>
+            <label>Estrategias que me ayudan</label><textarea id="pStrat"></textarea>
+            <label>Motivos para seguir</label><textarea id="pWhy"></textarea>
+            <label>Personas de contacto (nombre + teléfono)</label><textarea id="pPeople"></textarea>
+            <div class="row" style="margin-top:10px"><button class="btn" id="pSave">Guardar plan</button></div></div>
+        </div>
+
+        <!-- PRIVACIDAD -->
+        <div class="view hide" data-v="privacidad">
+          <div class="card"><h2>Privacidad y control de datos</h2><p class="sub">Transparencia total sobre lo que la app guarda.</p>
+            <div id="pvInfo"></div>
+            <div class="row" style="margin-top:14px"><button class="btn ghost" id="pvExport">⬇ Exportar mis datos (JSON)</button>
+              <button class="btn ghost" id="pvExportCsv">⬇ Exportar histórico (CSV)</button><button class="btn danger" id="pvWipe">🗑 Borrar todo (derecho al olvido)</button></div>
+            <p class="note" style="margin-top:12px">Cifrado con Web Crypto API: PBKDF2‑SHA256 (150k) → AES‑256‑GCM. La clave <b>nunca</b> se almacena; solo el <code>salt</code> y los datos cifrados quedan en <code>localStorage</code>.</p></div>
+        </div>
+
+      </section>
+    </main>
+    <footer>Re‑Late · Autoría: <b>Miguel Ángel Layunta López</b> · Zaragoza · Código abierto · <i>No sustituye tratamiento profesional ni atención de emergencias.</i></footer>
+  </div>
+</div>
+
+<button class="sos hide" id="sos" aria-label="Ayuda de emergencia">SOS</button>
+<div class="overlay" id="ov"><div class="sheet" id="ovSheet"></div></div>
+
+<script>
+/* ================= ESTADO + CRIPTOGRAFÍA ================= */
+const SKEY='relate.v3';
+let K=null,demo=false;
+let DB={moods:[],tasks:[],tcc:[],chat:[],apts:[],plan:{},vitals:[],ide:[],smoke:null,geo:null,dep:[],phq:[],gad:[],profile:{n:'',p:'',c:''},consent:null};
+const enc=new TextEncoder(),dec=new TextDecoder();
+const b64=b=>btoa(String.fromCharCode(...new Uint8Array(b)));
+const i64=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
+const pad=n=>String(n).padStart(2,'0');
+const iso=d=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+const dOf=e=>String(e.date||e.d||'').slice(0,10);
+async function derive(pass,salt){const km=await crypto.subtle.importKey('raw',enc.encode(pass),'PBKDF2',false,['deriveKey']);
+ return crypto.subtle.deriveKey({name:'PBKDF2',salt,iterations:150000,hash:'SHA-256'},km,{name:'AES-GCM',length:256},false,['encrypt','decrypt']);}
+async function encr(o){const iv=crypto.getRandomValues(new Uint8Array(12));
+ const ct=await crypto.subtle.encrypt({name:'AES-GCM',iv},K,enc.encode(JSON.stringify(o)));return{iv:b64(iv),ct:b64(ct)};}
+async function decr(p){const pt=await crypto.subtle.decrypt({name:'AES-GCM',iv:i64(p.iv)},K,i64(p.ct));return JSON.parse(dec.decode(pt));}
+async function save(){if(demo){localStorage.setItem(SKEY,JSON.stringify(DB));return;}localStorage.setItem(SKEY,JSON.stringify(await encr(DB)));}
+async function load(){const s=localStorage.getItem(SKEY);if(!s)return false;
+ if(demo){DB=Object.assign(DB,JSON.parse(s));return true;}
+ try{DB=Object.assign(DB,await decr(JSON.parse(s)));return true;}catch(_){return false;}}
+
+/* ================= CONSTANTES ================= */
+const MOODS=[['😞',1],['🙁',2],['😐',3],['🙂',4],['😀',5]];
+const EMOS=['ansiedad','tristeza','ira','vergüenza','soledad','esperanza','calma','gratitud','miedo','culpa'];
+const DISTS=['Catastrofismo','Todo o nada','Lectura de mente','Adivinación','Filtro mental','Descuento positivo','Personalización','Razonamiento emocional','Deberías','Etiquetado'];
+const IDE=[[0,'Sin ideación'],[1,'Deseo de morir o pensamientos vagos de muerte'],[2,'Ideación activa sin método, plan ni intención'],
+[3,'Ideación activa con método, sin plan concreto'],[4,'Ideación con plan concreto, sin intención declarada'],[5,'Ideación con plan e intención / conducta']];
+const SEV=[['Sin','sin síntomas'],['Leve','molestia manejable'],['Moderada','afecta actividad'],['Grave','casi no funciona'],['Muy grave','riesgo / urgencia']];
+const SYMP=['Ánimo bajo','Anhedonia','Insomnio o hipersomnia','Apetito o peso','Fatiga','Concentración','Culpa o desvalía','Lentificación','Ideas de muerte'];
+const RISK=/no quiero seguir|acabar con todo|hacerme daño|suicid|matarme|no puedo más|plan para morir/i;
+const FREQ=['Nada en absoluto','Varios días','Más de la mitad','Casi todos los días'];
+const PHQ9=['Poco interés o placer en hacer las cosas','Se ha sentido decaído(a), sin esperanza o deprimido(a)',
+ 'Dificultad para conciliar el sueño o dormir demasiado','Cansancio o poca energía','Poco apetito o ha comido en exceso',
+ 'Se ha sentido mal consigo mismo(a), un fracaso o que ha defraudado a su familia',
+ 'Dificultad para concentrarse (leer, ver la televisión)',
+ 'Se ha movido o hablado tan lento que los demás lo notaron, o todo lo contrario (inquieto, agitado)',
+ 'Pensamientos de que estaría mejor muerto(a) o de hacerse daño de alguna manera'];
+const GAD7=['Se ha sentido nervioso(a), ansioso(a) o con los nervios de punta','No ha podido parar de preocuparse o controlar la preocupación',
+ 'Se ha preocupado demasiado por distintas cosas','Dificultad para relajarse','Tan inquieto(a) que le cuesta estar sentado(a) quieto(a)',
+ 'Irritabilidad o se ha enfadado con facilidad','Miedo, como si algo malo pudiera ocurrir'];
+const CAT9=t=>t<=4?['mínimos','var(--brand)']:t<=9?['leves','var(--accent)']:t<=14?['moderados','var(--accent)']:
+ t<=19?['moderadamente graves','var(--danger)']:['graves','var(--danger)'];
+const CAT7=t=>t<=4?['mínimos','var(--brand)']:t<=9?['leve','var(--accent)']:t<=14?['moderada','var(--accent)']:['grave','var(--danger)'];
+const METRICS={
+ animo:{src:'moods',get:m=>m.mood,min:1,max:5,color:'var(--brand)',label:'Ánimo (1‑5)'},
+ ansiedad:{src:'moods',get:m=>m.anx,min:0,max:10,color:'var(--accent)',label:'Ansiedad (0‑10)'},
+ energia:{src:'moods',get:m=>m.en,min:0,max:10,color:'#2f9e8f',label:'Energía (0‑10)'},
+ sueno:{src:'moods',get:m=>m.slp,min:0,max:12,color:'#4a7fb5',label:'Sueño (h)'},
+ tabaco:{src:'moods',get:m=>m.cig,min:0,max:40,color:'#b4342e',label:'Cigarrillos/día'},
+ depresion:{src:'dep',get:d=>d.sev,min:0,max:4,color:'#8a67cf',label:'Depresión (0‑4)'},
+ ideacion:{src:'ide',get:i=>i.g,min:0,max:5,color:'#6b4f9e',label:'Ideación autolítica (0‑5)'},
+ ta:{src:'vitals',get:v=>v.s,min:70,max:200,color:'var(--danger)',label:'TA sistólica (mmHg)'},
+ phq:{src:'phq',get:e=>e.total,min:0,max:27,color:'#8a67cf',label:'PHQ‑9 (depresión 0‑27)'},
+ gad:{src:'gad',get:e=>e.total,min:0,max:21,color:'#4a7fb5',label:'GAD‑7 (ansiedad 0‑21)'}};
+const DOWNBETTER={ansiedad:1,depresion:1,ideacion:1,tabaco:1,ta:1,phq:1,gad:1};
+const ROPTS=[['animo','Ánimo y ansiedad'],['dep','Días con depresión'],['ide','Ideación autolítica'],
+ ['vit','Constantes (TA / ppm)'],['sue','Sueño y energía'],['cig','Tabaco'],['test','PHQ‑9 / GAD‑7'],['ent','Entradas del periodo']];
+const INC={};ROPTS.forEach(([k])=>INC[k]=true);
+
+/* ================= CONSENTIMIENTO / BLOQUEO ================= */
+const CONSENTS=['Diario emocional','Calendario de depresión','Constantes, tabaquismo e ideación','Cuestionarios e informes','Registros TCC','Plan de seguridad','Mensajería con profesional','Agenda y recordatorios'];
+function renderConsent(){const c=document.getElementById('consentTags');c.innerHTML='';
+ CONSENTS.forEach(t=>{const b=document.createElement('button');b.className='tag';b.textContent=t;b.onclick=()=>b.classList.toggle('on');c.appendChild(b);});}
+document.getElementById('cGo').onclick=async()=>{
+ const p=document.getElementById('cPass').value,p2=document.getElementById('cPass2').value,err=document.getElementById('cErr');err.textContent='';
+ if(p.length<10)return err.textContent='La contraseña debe tener al menos 10 caracteres.';
+ if(p!==p2)return err.textContent='Las contraseñas no coinciden.';
+ const sel=[...document.querySelectorAll('#consentTags .on')].map(b=>b.textContent);
+ if(!document.getElementById('cAll').checked||!sel.length)return err.textContent='Marca la aceptación y al menos una finalidad.';
+ const salt=crypto.getRandomValues(new Uint8Array(16));K=await derive(p,salt);
+ localStorage.setItem(SKEY+'.salt',b64(salt));
+ DB.consent={date:new Date().toISOString(),purposes:sel,version:'3.1'};demo=false;await save();enter();};
+document.getElementById('cDemo').onclick=()=>{demo=true;DB.consent={date:new Date().toISOString(),purposes:['demostración'],version:'3.1-demo'};
+ localStorage.setItem(SKEY,JSON.stringify(DB));enter();};
+async function unlock(){const saltRaw=localStorage.getItem(SKEY+'.salt');if(!saltRaw)return;
+ K=await derive(document.getElementById('lPass').value,i64(saltRaw));
+ const ok=await load();document.getElementById('lErr').textContent=ok?'':'Contraseña incorrecta.';if(ok)enter();}
+document.getElementById('lGo').onclick=unlock;
+document.getElementById('lPass').addEventListener('keydown',e=>{if(e.key==='Enter')unlock();});
+
+/* ================= NAVEGACIÓN ================= */
+const VIEWS=[['home','Resumen','▦'],['diario','Diario','✎'],['calendario','Calendario','📅'],['salud','Salud','❤'],
+['graficos','Gráficas','📈'],['historico','Histórico','🗂'],['informe','Informe','📄'],['tcc','TCC','⚖'],
+['crisis','Calma','🛟'],['sesion','Sesión','🎥'],['recursos','Recursos','🔗'],['plan','Mi plan','🛡'],['privacidad','Privacidad','🔒']];
+function nav(){const t=document.getElementById('navTop'),s=document.getElementById('navSide');t.innerHTML='';s.innerHTML='';
+ VIEWS.forEach(([id,label,ic])=>{const b=document.createElement('button');b.textContent=label;b.dataset.v=id;b.onclick=()=>go(id);
+  const a=document.createElement('a');a.href='#'+id;a.dataset.v=id;a.innerHTML=`<span>${ic}</span>${label}`;a.onclick=e=>{e.preventDefault();go(id);};
+  t.appendChild(b);s.appendChild(a);});}
+function go(id){document.querySelectorAll('.view').forEach(v=>v.classList.toggle('hide',v.dataset.v!==id));
+ document.querySelectorAll('#navSide a').forEach(a=>a.classList.toggle('on',a.dataset.v===id));
+ document.querySelectorAll('#navTop button').forEach(b=>b.setAttribute('aria-current',String(b.dataset.v===id)));
+ location.hash=id;render(id);window.scrollTo({top:0});}
+function enter(){['consent','lock'].forEach(i=>document.getElementById(i).classList.add('hide'));
+ document.getElementById('shell').classList.remove('hide');document.getElementById('sos').classList.remove('hide');
+ nav();go((location.hash||'#home').slice(1));}
+
+/* ================= RENDER ================= */
+let selMood=3,selEmo=[],ideSel=0,gSel='animo',tTab='phq',ans=[0,0,0,0,0,0,0,0,0];
+function render(id){
+ if(id==='home')renderHome();
+ if(id==='diario'){renderMoodPick();renderEmo();
+  renderList('dList',DB.moods.slice().reverse().slice(0,15),m=>`<h4>${m.date} · ${MOODS[m.mood-1][0]} ánimo ${m.mood}/5 · ansiedad ${m.anx??'—'}/10 · sueño ${m.slp??'—'} h</h4>
+   <div class="meta">${(m.emos||[]).join(', ')||'—'}</div><p style="margin:6px 0 0">${esc(m.note)}</p>`);checkRisk();}
+ if(id==='calendario')renderCal();
+ if(id==='salud')renderSalud();
+ if(id==='graficos'){renderGraficos();renderProgreso();}
+ if(id==='historico')renderHistorico();
+ if(id==='informe'){const g=x=>document.getElementById(x);
+  g('rName').value=DB.profile.n||'';g('rProf').value=DB.profile.p||'';g('rCenter').value=DB.profile.c||'';renderTest();}
+ if(id==='tcc'){document.getElementById('tDist').innerHTML=DISTS.map(d=>`<option>${d}</option>`).join('');
+  renderList('tList',DB.tcc.slice().reverse(),t=>`<h4>${t.date} · ${esc(t.sit)}</h4><div class="meta">${esc(t.emo)} → ${t.re}% · ${esc(t.dist)}</div>
+   <p style="margin:6px 0 0">💭 ${esc(t.auto)}</p><p style="margin:0;color:var(--brand)">🔁 ${esc(t.alt)}</p>`);
+  renderList('taskList',DB.tasks.filter(t=>!t.done),t=>`<div class="row" style="justify-content:space-between">
+   <span>${esc(t.t)} <small class="meta">· ${t.d||'sin fecha'}</small></span><button class="btn sm ghost" data-del-task="${t.id}">Hecha</button></div>`);}
+ if(id==='crisis')renderCrisis();
+ if(id==='plan')['pSign','pStrat','pWhy','pPeople'].forEach(i=>document.getElementById(i).value=DB.plan[i]||'');
+ if(id==='sesion'){renderChat();renderApts();}
+ if(id==='recursos')renderLinks();
+ if(id==='privacidad'){const n=allEntries().length;
+  document.getElementById('pvInfo').innerHTML=`<div class="stats">
+   <div class="stat"><b>${DB.dep.length}</b><span>días con depresión</span></div>
+   <div class="stat"><b>${DB.moods.length}</b><span>entradas de diario</span></div>
+   <div class="stat"><b>${DB.phq.length+DB.gad.length}</b><span>cuestionarios</span></div>
+   <div class="stat"><b>${n}</b><span>entradas totales</span></div></div>
+   <p style="margin-top:12px">Consentimiento: ${DB.consent?DB.consent.date.slice(0,10):'—'} · Finalidades: ${DB.consent?DB.consent.purposes.join(', '):'—'}.</p>
+   <p class="meta">Ubicación guardada: ${DB.geo?'sí ('+DB.geo.lat.toFixed(4)+', '+DB.geo.lon.toFixed(4)+')':'no'} · Transporte: ${demo?'demostración (sin cifrar)':'AES‑256‑GCM local'}. Nada viaja por la red.</p>`;}
+}
+function renderHome(){const m7=DB.moods.slice(-7);const avg=mean(m7.map(x=>x.mood));
+ const anx=mean(m7.filter(x=>x.anx!=null).map(x=>x.anx));
+ const l30=DB.dep.filter(d=>within(d.date,30));const grave=l30.filter(d=>d.sev>=2).length;
+ const last=DB.phq.at(-1);
+ document.getElementById('homeStats').innerHTML=`
+  <div class="stat"><b>${avg?f1(avg):'—'}</b><span>ánimo 7 días</span></div>
+  <div class="stat"><b style="color:${anx>6?'var(--danger)':'var(--brand)'}">${anx!=null?f1(anx):'—'}</b><span>ansiedad 7 días</span></div>
+  <div class="stat"><b style="color:${grave>7?'var(--danger)':'var(--brand)'}">${grave}</b><span>días ≥ moderada (30 d)</span></div>
+  <div class="stat"><b>${last?last.total:'—'}</b><span>último PHQ‑9</span></div>`;}
+function renderMoodPick(){const c=document.getElementById('moodPick');c.innerHTML='';
+ MOODS.forEach(([e,v])=>{const b=document.createElement('button');b.textContent=e;b.title=v+'/5';b.onclick=()=>{selMood=v;renderMoodPick();};
+  if(v===selMood)b.classList.add('on');c.appendChild(b);});}
+function renderEmo(){const c=document.getElementById('emoPick');c.innerHTML='';
+ EMOS.forEach(e=>{const b=document.createElement('button');b.className='tag'+(selEmo.includes(e)?' on':'');b.textContent=e;
+  b.onclick=()=>{selEmo.includes(e)?selEmo=selEmo.filter(x=>x!==e):selEmo.push(e);renderEmo();};c.appendChild(b);});}
+document.getElementById('anx').oninput=e=>document.getElementById('anxV').textContent=e.target.value;
+document.getElementById('en').oninput=e=>document.getElementById('enV').textContent=e.target.value;
+document.getElementById('dSave').onclick=async()=>{const d=new Date();
+ DB.moods.push({id:+d,date:iso(d),mood:selMood,anx:+document.getElementById('anx').value,en:+document.getElementById('en').value,
+  slp:slp.value===''?null:+slp.value,cig:cig.value===''?null:+cig.value,emos:selEmo.slice(),note:dNote.value});
+ dNote.value='';slp.value='';cig.value='';selEmo=[];await save();go('diario');};
+function checkRisk(){const l=DB.moods.at(-1);
+ document.getElementById('riskBox').classList.toggle('hide',!(l&&(l.mood<=2||(l.anx??0)>=8||RISK.test(l.note||''))));}
+function within(isoStr,days){return (Date.now()-new Date(isoStr+'T12:00:00').getTime())<days*864e5;}
+const mean=a=>a.length?a.reduce((x,y)=>x+y,0)/a.length:null;
+const f1=v=>v==null?'—':Math.round(v*10)/10;
+
+/* ================= CALENDARIO ================= */
+let calRef=new Date();calRef.setDate(1);
+const depFor=id=>DB.dep.find(d=>d.date===id);
+function renderCal(){
+ const sel=document.getElementById('calJump');
+ if(sel&&!sel.options.length){const now=new Date();
+  for(let i=11;i>=-1;i--){const d=new Date(now.getFullYear(),now.getMonth()-i,1),o=document.createElement('option');
+   o.value=d.getFullYear()+'-'+d.getMonth();o.textContent=d.toLocaleDateString('es-ES',{month:'long',year:'numeric'});sel.appendChild(o);}}
+ const y=calRef.getFullYear(),m=calRef.getMonth();
+ document.getElementById('calTitle').textContent=calRef.toLocaleDateString('es-ES',{month:'long',year:'numeric'});
+ const start=(new Date(y,m,1).getDay()+6)%7,days=new Date(y,m+1,0).getDate(),today=iso(new Date());
+ let html=['L','M','X','J','V','S','D'].map(d=>`<div class="hd">${d}</div>`).join('');
+ for(let i=0;i<start;i++)html+='<div class="cell empty"></div>';
+ for(let d=1;d<=days;d++){const id=iso(new Date(y,m,d)),e=depFor(id),mo=DB.moods.find(x=>x.date===id);
+  html+=`<div class="cell ${e?'s'+e.sev:''} ${id===today?'today':''}" data-day="${id}" role="button" tabindex="0" aria-label="${id}">
+   <span class="dd">${d}${mo?' '+MOODS[mo.mood-1][0]:''}</span>
+   <span class="sy">${e?SEV[e.sev][0]+(e.symp.length?' · '+e.symp.length:''):''}</span></div>`;}
+ document.getElementById('calGrid').innerHTML=html;
+ const mk=DB.dep.filter(d=>d.date.startsWith(y+'-'+pad(m+1)));
+ const heavy=mk.filter(d=>d.sev>=3||d.symp.includes('Ideas de muerte'));
+ const al=document.getElementById('calAlert');
+ if(heavy.length){al.classList.remove('hide');
+  al.innerHTML=`<b>${heavy.length} día(s) de este mes con gravedad alta o ideas de muerte.</b> Esto merece acompañamiento profesional cuanto antes.
+   <div class="row" style="margin-top:8px"><a class="btn danger" href="tel:024">024 · 24 h</a><a class="btn" href="tel:112">112</a>
+   <a class="btn ghost" href="tel:976232828">T. Esperanza Zaragoza</a><button class="btn sm ghost" data-open="crisis">Protocolo de calma</button></div>`;}
+ else al.classList.add('hide');
+ const counts=[0,0,0,0,0];mk.forEach(d=>counts[d.sev]++);
+ const l30=DB.dep.filter(d=>within(d.date,30));
+ let streak=0;for(let i=0;i<120;i++){const d=new Date();d.setDate(d.getDate()-i);const e=depFor(iso(d));
+  if(e&&e.sev>=2)streak++;else if(!e)continue;else break;}
+ document.getElementById('depStats').innerHTML=`
+  <div class="stat"><b>${mk.length}</b><span>días marcados (mes)</span></div>
+  <div class="stat"><b>${counts[3]+counts[4]}</b><span>graves o muy graves</span></div>
+  <div class="stat"><b>${l30.length?f1(mean(l30.map(d=>d.sev))):'—'}</b><span>gravedad media 30 d</span></div>
+  <div class="stat"><b>${streak}</b><span>racha ≥ moderada</span></div>`;
+ document.getElementById('depBars').innerHTML=SEV.map((s,i)=>{const pct=mk.length?Math.round(counts[i]/mk.length*100):0;
+  return `<div style="margin-bottom:8px"><div class="row" style="justify-content:space-between"><span style="font-size:.88em">${s[0]} · ${s[1]}</span><b class="meta">${counts[i]}</b></div>
+   <div class="bar"><i style="width:${pct}%;background:var(--s${Math.max(1,i)})"></i></div></div>`;}).join('');
+ renderList('depList',DB.dep.slice().sort((a,b)=>a.date<b.date?1:-1).slice(0,40),d=>
+  `<div class="row" style="justify-content:space-between"><span><b>${d.date}</b> · ${SEV[d.sev][0]} <small class="meta">${d.symp.join(', ')||'—'}</small></span>
+   <button class="btn sm ghost" data-day="${d.date}">Editar</button></div>${d.note?`<p style="margin:6px 0 0">${esc(d.note)}</p>`:''}`);}
+document.getElementById('calPrev').onclick=()=>{calRef.setMonth(calRef.getMonth()-1);renderCal();};
+document.getElementById('calNext').onclick=()=>{calRef.setMonth(calRef.getMonth()+1);renderCal();};
+document.getElementById('calToday').onclick=()=>{calRef=new Date();calRef.setDate(1);renderCal();openDay(iso(new Date()));};
+document.getElementById('calJump').onchange=e=>{const[a,b]=e.target.value.split('-');calRef=new Date(+a,+b,1);renderCal();};
+document.getElementById('calExport').onclick=()=>{const y=calRef.getFullYear(),m=calRef.getMonth();
+ const rows=[['fecha','gravedad','sintomas','nota']].concat(DB.dep.filter(d=>d.date.startsWith(y+'-'+pad(m+1)))
+  .map(d=>[d.date,SEV[d.sev][0],'"'+d.symp.join('; ')+'"',`"${(d.note||'').replace(/"/g,'""')}"`]));
+ dl('\uFEFF'+rows.map(r=>r.join(',')).join('\n'),'relate-calendario-'+y+'-'+pad(m+1)+'.csv','text/csv');};
+document.addEventListener('click',e=>{const c=e.target.closest('[data-day]');if(c)openDay(c.dataset.day);});
+document.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.dataset&&e.target.dataset.day)openDay(e.target.dataset.day);});
+let editDay=null;
+function openDay(id){editDay=id;const e=depFor(id)||{sev:0,symp:[],note:''};
+ sheet(`<h3>${new Date(id+'T12:00:00').toLocaleDateString('es-ES',{weekday:'long',day:'numeric',month:'long',year:'numeric'})}</h3>
+  <label>Gravedad del estado depresivo</label>
+  <div class="sevRow">${SEV.map((s,i)=>`<button class="sev s${i}${e.sev===i?' on':''}" data-sev="${i}">${i} · ${s[0]}<small>${s[1]}</small></button>`).join('')}</div>
+  <label>Síntomas presentes ese día</label>
+  <div class="tags">${SYMP.map(s=>`<button class="tag${e.symp.includes(s)?' on':''}" data-sym="${s}">${s}</button>`).join('')}</div>
+  <label>Nota</label><textarea id="depNote">${esc(e.note||'')}</textarea>
+  <div class="row" style="margin-top:12px"><button class="btn" data-dep-save>Guardar día</button>
+  <button class="btn ghost" data-dep-del>Borrar registro</button><button class="btn ghost" data-close>Cerrar</button></div>
+  <p class="meta">Herramienta de seguimiento: no sustituye la valoración de un profesional.</p>`);}
+document.getElementById('ovSheet').addEventListener('click',async ev=>{
+ const b=ev.target.closest('[data-sev],[data-sym],[data-dep-save],[data-dep-del]');if(!b)return;
+ if(b.dataset.sev){document.querySelectorAll('#ovSheet .sev').forEach(x=>x.classList.remove('on'));b.classList.add('on');}
+ if(b.dataset.sym)b.classList.toggle('on');
+ if(b.dataset.depDel){DB.dep=DB.dep.filter(d=>d.date!==editDay);await save();closeSheet();renderCal();return;}
+ if(b.dataset.depSave){const sev=+(document.querySelector('#ovSheet .sev.on')||{dataset:{sev:0}}).dataset.sev;
+  const symp=[...document.querySelectorAll('#ovSheet .tag.on')].map(x=>x.textContent);
+  const note=document.getElementById('depNote').value,rec={date:editDay,sev,symp,note};
+  const i=DB.dep.findIndex(d=>d.date===editDay);i>=0?DB.dep[i]=rec:DB.dep.push(rec);await save();closeSheet();renderCal();
+  if(sev>=3||symp.includes('Ideas de muerte')||RISK.test(note)){
+   sheet(`<h3>Gracias por registrarlo</h3><p>Has marcado un día de gravedad alta${symp.includes('Ideas de muerte')?' y con ideas de muerte':''}. Merece contarlo <b>hoy</b> a alguien de confianza o a un profesional.</p>
+    <div class="row" style="margin-top:10px"><a class="btn danger" href="tel:024">024 · 24 h</a><a class="btn" href="tel:112">112</a>
+    <a class="btn ghost" href="tel:976232828">T. Esperanza</a><button class="btn ghost" data-close>Ahora no</button></div>`);}}});
+
+/* ================= SALUD ================= */
+function bpClass(s,d){if(s>=180||d>=110)return['URGENTE','var(--danger)','Posible crisis hipertensiva: llama al 112.'];
+ if(s>=140||d>=90)return['HTA grado 2','var(--danger)','Requiere valoración médica.'];
+ if(s>=130||d>=80)return['HTA grado 1','var(--accent)','Consúltalo con tu médico.'];
+ if(s>=120)return['Elevada','var(--accent)','Repítela otro día en reposo.'];return['Normal','var(--brand)','Dentro de rango.'];}
+function renderSalud(){
+ const v=DB.vitals.slice(-20),last=v.at(-1);
+ document.getElementById('vStats').innerHTML=last?(()=>{const[t,c]=bpClass(last.s,last.d);return`
+  <div class="stat"><b>${last.s}/${last.d}</b><span>última TA</span></div>
+  <div class="stat"><b style="color:${c}">${t}</b><span>clasificación</span></div>
+  <div class="stat"><b>${last.ppm||'—'}</b><span>ppm</span></div>
+  <div class="stat"><b>${Math.round(mean(v.map(x=>x.s)))}</b><span>TA media</span></div>`})()
+  :'<p class="sub">Sin registros todavía.</p>';
+ const al=document.getElementById('vAlert');
+ if(last){const[t,c,txt]=bpClass(last.s,last.d);
+  if(t==='URGENTE'||t==='HTA grado 2'){al.classList.remove('hide');
+   al.innerHTML=`<b>${t} · ${last.s}/${last.d} mmHg.</b> ${txt}<div class="row" style="margin-top:8px"><a class="btn danger" href="tel:112">Llamar 112</a><a class="btn ghost" href="tel:024">024</a></div>`;}
+  else al.classList.add('hide');}
+ const sm=DB.smoke,st=document.getElementById('sStats');
+ if(sm){const py=((sm.cig/20)*sm.yrs).toFixed(1);
+  const days=sm.quit?Math.max(0,Math.floor((Date.now()-new Date(sm.quit+'T12:00'))/864e5)):0;
+  st.innerHTML=`<div class="stat"><b>${py}</b><span>paquetes‑año</span></div>
+   <div class="stat"><b>${sm.cig}</b><span>cigarrillos/día</span></div>
+   <div class="stat"><b>${days}</b><span>días sin fumar</span></div>
+   <div class="stat"><b>${(days*sm.cig*(sm.price/20)).toFixed(0)}€</b><span>ahorrados</span></div>`;}
+ else st.innerHTML='<p class="sub">Rellena los datos y pulsa Calcular.</p>';
+ const c=document.getElementById('idePick');c.innerHTML='';
+ IDE.forEach(([n,t])=>{const b=document.createElement('button');b.textContent=n;b.title=t;b.style.fontSize='1.2em';
+  if(n===ideSel)b.classList.add('on');b.onclick=()=>{ideSel=n;renderSalud();};c.appendChild(b);});
+ document.getElementById('ideDesc').textContent=(IDE.find(i=>i[0]===ideSel)||[0,''])[1];
+ const li=DB.ide.at(-1),prev=DB.ide.at(-2),iA=document.getElementById('ideAlert');
+ if(li&&(li.g>=3||(prev&&li.g>prev.g&&li.g>=2))){iA.classList.remove('hide');
+  iA.innerHTML=`<b>Grado ${li.g}${prev&&li.g>prev.g?' en aumento':''}.</b> Cuéntalo a tu terapeuta hoy; si es urgente, llama.
+   <div class="row" style="margin-top:8px"><a class="btn danger" href="tel:024">024</a><a class="btn" href="tel:112">112</a>
+   <button class="btn ghost" data-open="crisis">Protocolo de calma</button></div>`;}else iA.classList.add('hide');
+ if(DB.geo)showGeo(DB.geo);}
+document.getElementById('vSave').onclick=async()=>{const s=+vSys.value,d=+vDia.value;if(!s||!d)return;
+ DB.vitals.push({date:vDate.value||new Date().toISOString().slice(0,16),s,d,ppm:+vPpm.value||null});await save();go('salud');};
+document.getElementById('sSave').onclick=async()=>{DB.smoke={cig:+sCig.value||0,yrs:+sYrs.value||0,price:+sPrice.value||6.5,quit:sQuit.value||null};await save();go('salud');};
+document.getElementById('ideSave').onclick=async()=>{DB.ide.push({date:ideDate.value||iso(new Date()),g:ideSel,f:+ideFreq.value||0,note:ideNote.value});
+ ideNote.value='';await save();go('salud');};
+let POS=null;
+function showGeo(g){const o=document.getElementById('geoOut');o.classList.remove('hide');
+ const la=g.lat.toFixed(5),lo=g.lon.toFixed(5);
+ o.innerHTML=`<b>${la}, ${lo}</b> · precisión ±${Math.round(g.acc)} m · ${new Date(g.ts).toLocaleTimeString('es-ES')}
+  <div class="row" style="margin-top:8px"><a class="btn sm ghost" target="_blank" rel="noopener"
+  href="https://www.openstreetmap.org/?mlat=${la}&mlon=${lo}#map=17/${la}/${lo}">Ver en mapa</a><span class="meta">OpenStreetMap: sin rastreo publicitario.</span></div>`;}
+function getPos(cb){if(!navigator.geolocation)return toast('Este navegador no permite geolocalizar');
+ navigator.geolocation.getCurrentPosition(p=>{POS={lat:p.coords.latitude,lon:p.coords.longitude,acc:p.coords.accuracy,ts:p.timestamp};cb&&cb(POS);},
+  e=>toast('No se pudo obtener la ubicación: '+e.message),{enableHighAccuracy:true,timeout:8000});}
+document.getElementById('geoGo').onclick=()=>getPos(g=>{showGeo(g);document.getElementById('btn112').textContent='🚨 LLAMAR AL 112 (ubicación lista)';
+ if(document.getElementById('geoKeep').checked){DB.geo=g;save();}});
+document.getElementById('geoCopy').onclick=()=>{if(!POS)return toast('Primero obtén tu ubicación');
+ copy(`${POS.lat.toFixed(5)}, ${POS.lon.toFixed(5)} (±${Math.round(POS.acc)} m)`,'Coordenadas copiadas');};
+document.getElementById('geoShare').onclick=async()=>{if(!POS)return toast('Primero obtén tu ubicación');
+ const la=POS.lat.toFixed(5),lo=POS.lon.toFixed(5);
+ const t=`Necesito ayuda. Estoy en ${la}, ${lo} (±${Math.round(POS.acc)} m). https://www.openstreetmap.org/?mlat=${la}&mlon=${lo}#map=17/${la}/${lo} — enviado desde Re‑Late`;
+ if(navigator.share){try{await navigator.share({title:'Re-Late · ubicación',text:t});}catch(_){}}else copy(t,'Texto listo para WhatsApp/SMS');};
+document.getElementById('sosSend').onclick=()=>{if(!POS)return toast('Obtén primero tu ubicación');
+ copy((sosMsg.value||'No me encuentro bien, necesito acompañamiento.')+` Ubicación: ${POS.lat.toFixed(5)}, ${POS.lon.toFixed(5)} (±${Math.round(POS.acc)} m)`,'Aviso preparado y copiado');};
+document.getElementById('btn112').addEventListener('click',()=>{if(POS)copy(`${POS.lat.toFixed(5)}, ${POS.lon.toFixed(5)} ±${Math.round(POS.acc)}m`);});
+
+/* ================= GRÁFICAS ================= */
+function seriesOf(key,days){const m=METRICS[key];const list=(DB[m.src]||[]).filter(e=>{const d=dOf(e);return d&&m.get(e)!=null&&(!days||within(d,days));});
+ list.sort((a,b)=>dOf(a)<dOf(b)?-1:1);return list.map(e=>({x:dOf(e),y:m.get(e)}));}
+function lineChart(el,pts,o){
+ if(!el)return;
+ if(!pts||!pts.length){el.innerHTML='<p class="sub">Sin datos para esta métrica en el rango elegido.</p>';return;}
+ if(pts.length===1){el.innerHTML=`<p class="sub">Solo hay un registro (${pts[0].x}: ${pts[0].y}). Necesitas al menos dos para ver la curva.</p>`;return;}
+ const W=680,H=200,P=34,vals=pts.map(p=>p.y);
+ const mn=Math.min(o.min,...vals),mx=Math.max(o.max,...vals),sp=Math.max(.001,mx-mn);
+ const X=i=>P+i*(W-2*P)/(pts.length-1),Y=v=>H-P-((v-mn)/sp)*(H-2*P);
+ const d=pts.map((p,i)=>`${i?'L':'M'}${X(i).toFixed(1)},${Y(p.y).toFixed(1)}`).join(' ');
+ el.innerHTML=`<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto" role="img" aria-label="Evolución: ${o.label}">
+  ${[0,.25,.5,.75,1].map(f=>mn+f*sp).map(v=>`<line x1="${P}" y1="${Y(v).toFixed(1)}" x2="${W-P}" y2="${Y(v).toFixed(1)}" stroke="var(--line)"/>
+   <text x="6" y="${(Y(v)+4).toFixed(1)}" font-size="10" fill="var(--muted)">${Math.round(v)}</text>`).join('')}
+  <path d="${d} L${X(pts.length-1).toFixed(1)},${H-P} L${X(0).toFixed(1)},${H-P} Z" fill="${o.color}" opacity=".12"/>
+  <path d="${d}" fill="none" stroke="${o.color}" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+  ${pts.map((p,i)=>`<circle cx="${X(i).toFixed(1)}" cy="${Y(p.y).toFixed(1)}" r="3.4" fill="${o.color}"><title>${p.x}: ${p.y}</title></circle>`).join('')}
+  <text x="${P}" y="${H-6}" font-size="10" fill="var(--muted)">${pts[0].x}</text>
+  <text x="${W-P}" y="${H-6}" font-size="10" fill="var(--muted)" text-anchor="end">${pts[pts.length-1].x}</text>
+  <text x="${W-P}" y="14" font-size="11" fill="var(--muted)" text-anchor="end">${o.label} · ${pts.length} registros</text></svg>`;}
+function win(key,days,off=0){const m=METRICS[key];if(!m)return[];
+ return (DB[m.src]||[]).filter(e=>{const d=dOf(e);if(!d||m.get(e)==null)return false;
+  const age=Date.now()-new Date(d+'T12:00').getTime();return age>=off*864e5&&age<(off+days)*864e5;}).map(m.get);}
+function progRows(days){
+ return ['animo','ansiedad','depresion','ideacion','energia','sueno','tabaco','phq','gad'].filter(k=>METRICS[k]).map(k=>{
+  const mc=mean(win(k,days)),mp=mean(win(k,days,days));
+  if(mc==null)return '';
+  const d=mp==null?null:Math.round((mc-mp)*10)/10;
+  const better=DOWNBETTER[k]?d<0:d>0;
+  const cls=d==null||Math.abs(d)<0.2?'flat':better?'better':'worse';
+  return `<tr><td>${METRICS[k].label}</td><td>${f1(mc)}</td><td>${mp==null?'sin datos':f1(mp)}</td>
+   <td class="delta ${cls}">${d==null?'—':(d>0?'▲ +':'▼ ')+d}${d==null?'':(better?' mejor':' peor')}</td></tr>`;}).join('');}
+function renderGraficos(){
+ const wrap=document.getElementById('gMetrics');
+ if(!wrap.dataset.built){wrap.innerHTML=Object.entries(METRICS).map(([k,m])=>`<button class="tag${k===gSel?' on':''}" data-m="${k}">${m.label}</button>`).join('');
+  wrap.dataset.built='1';wrap.onclick=e=>{const b=e.target.closest('[data-m]');if(!b)return;gSel=b.dataset.m;
+   [...wrap.children].forEach(c=>c.classList.toggle('on',c.dataset.m===gSel));renderGraficos();};}
+ const days=+document.getElementById('gRange').value;
+ const m=METRICS[gSel],pts=seriesOf(gSel,days||3650);
+ lineChart(document.getElementById('gChart'),pts,m);
+ const gT=document.getElementById('gTrend'),gS=document.getElementById('gStats');
+ if(pts.length){const ys=pts.map(p=>p.y);
+  const w7=ys.slice(-7),w7p=ys.slice(-14,-7);
+  const dAvg=w7p.length&&w7.length?mean(w7)-mean(w7p):null;
+  gS.innerHTML=`<div class="stat"><b>${ys[ys.length-1]}</b><span>último valor</span></div>
+   <div class="stat"><b>${f1(mean(ys))}</b><span>media del rango</span></div>
+   <div class="stat"><b>${Math.min(...ys)}</b><span>mínimo</span></div>
+   <div class="stat"><b>${Math.max(...ys)}</b><span>máximo</span></div>`;
+  if(dAvg==null)gT.innerHTML='Registra más días para calcular la tendencia.';
+  else{const better=DOWNBETTER[gSel]?dAvg<-0.2:dAvg>0.2,worse=DOWNBETTER[gSel]?dAvg>0.2:dAvg<-0.2;
+   gT.innerHTML=`Última semana vs. anterior: <b>${dAvg>0.2?'en aumento':dAvg<-0.2?'en descenso':'plana'}</b> (${(dAvg>0?'+':'')+f1(dAvg)}). ${better?'Va mejor: sigue así.':worse?'Empeora: coméntalo con tu profesional hoy.':'Sin cambios relevantes.'}`;}}
+ else{gS.innerHTML='';gT.innerHTML='';}
+ const keys=['animo','ansiedad','depresion','ideacion','phq'],colors=['var(--brand)','var(--accent)','#8a67cf','#6b4f9e','#4a7fb5'];
+ const norm=keys.map((k,i)=>({label:METRICS[k].label,color:colors[i],
+  pts:seriesOf(k,days||90).map(p=>({x:p.x,y:Math.round((p.y-METRICS[k].min)/Math.max(.001,METRICS[k].max-METRICS[k].min)*100)}))}));
+ const xs=[...new Set(norm.flatMap(s=>s.pts.map(p=>p.x)))].sort(),cmp=document.getElementById('gCmp');
+ if(xs.length<2)cmp.innerHTML='<p class="sub">Necesitas al menos 2 días registrados en varias métricas.</p>';
+ else{const W=680,H=220,P=30,X=i=>P+i*(W-2*P)/(xs.length-1),Y=v=>H-P-(v/100)*(H-2*P);
+  cmp.innerHTML=`<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto" role="img" aria-label="Comparativa normalizada">
+   ${[0,50,100].map(v=>`<line x1="${P}" y1="${Y(v)}" x2="${W-P}" y2="${Y(v)}" stroke="var(--line)"/>
+    <text x="6" y="${Y(v)+4}" font-size="10" fill="var(--muted)">${v}</text>`).join('')}
+   ${norm.map(s=>s.pts.length>1?`<path d="${s.pts.map((p,i)=>`${i?'L':'M'}${X(xs.indexOf(p.x)).toFixed(1)},${Y(p.y).toFixed(1)}`).join(' ')}"
+     fill="none" stroke="${s.color}" stroke-width="2.6" opacity=".9"/>`:'').join('')}</svg>
+   <div class="tags">${norm.map(s=>`<span class="tag" style="cursor:default"><i style="display:inline-block;width:10px;height:10px;border-radius:50%;background:${s.color};margin-right:6px"></i>${s.label}</span>`).join('')}</div>`;}
+ const byMonth={};DB.dep.forEach(d=>{const k=d.date.slice(0,7);(byMonth[k]=byMonth[k]||[]).push(d.sev);});
+ const mk=Object.entries(byMonth).sort().slice(-12),gm=document.getElementById('gMonths');
+ gm.innerHTML=mk.length?(()=>{const W=680,H=170,P=28,bw=(W-2*P)/mk.length;
+  return `<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto" role="img" aria-label="Gravedad media por mes">
+   ${[0,1,2,3,4].map(v=>`<line x1="${P}" y1="${H-20-v*32}" x2="${W-P}" y2="${H-20-v*32}" stroke="var(--line)"/>
+    <text x="6" y="${H-16-v*32}" font-size="10" fill="var(--muted)">${v}</text>`).join('')}
+   ${mk.map(([k,arr],i)=>{const a=mean(arr),hh=a*32;
+    return `<rect x="${(P+i*bw+bw*.18).toFixed(1)}" y="${(H-20-hh).toFixed(1)}" width="${(bw*.64).toFixed(1)}" height="${hh.toFixed(1)}"
+     rx="4" fill="var(--s${Math.max(1,Math.round(a))})" stroke="var(--line)"><title>${k}: media ${f1(a)} (${arr.length} días)</title></rect>
+     <text x="${(P+i*bw+bw/2).toFixed(1)}" y="${H-6}" font-size="9" fill="var(--muted)" text-anchor="middle">${k.slice(2)}</text>`;}).join('')}</svg>`})()
+  :'<p class="sub">Marca días en el calendario para ver la media mensual.</p>';}
+document.getElementById('gRange').onchange=()=>{renderGraficos();renderProgreso();};
+function renderProgreso(){
+ const rows=progRows(30),el=document.getElementById('progTable');
+ el.innerHTML=rows?`<table class="rep-t"><tr><th>Métrica</th><th>Últimos 30 d</th><th>30 d previos</th><th>Cambio</th></tr>${rows}</table>`
+  :'<p class="sub">Aún no hay datos suficientes: registra ánimo, ansiedad o días de depresión.</p>';
+ const buckets={};DB.moods.forEach(m=>{const d=new Date(m.date+'T12:00');d.setDate(d.getDate()-((d.getDay()+6)%7));
+  const k=iso(d);(buckets[k]=buckets[k]||[]).push(m.mood);});
+ const ks=Object.keys(buckets).sort().slice(-8),pw=document.getElementById('progWeeks');
+ if(ks.length){const W=680,H=150,P=26,bw=(W-2*P)/ks.length;
+  pw.innerHTML=`<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto" role="img" aria-label="Ánimo medio por semana">
+   ${[1,2,3,4,5].map(v=>`<line x1="${P}" y1="${H-18-(v-1)*30}" x2="${W-P}" y2="${H-18-(v-1)*30}" stroke="var(--line)"/>
+    <text x="6" y="${H-14-(v-1)*30}" font-size="10" fill="var(--muted)">${v}</text>`).join('')}
+   ${ks.map((k,i)=>{const a=mean(buckets[k]),hh=(a-1)*30;
+    return `<rect x="${(P+i*bw+bw*.2).toFixed(1)}" y="${(H-18-hh).toFixed(1)}" width="${(bw*.6).toFixed(1)}" height="${hh.toFixed(1)}" rx="4"
+     fill="var(--brand)"><title>${k}: ${f1(a)} (${buckets[k].length} días)</title></rect>
+     <text x="${(P+i*bw+bw/2).toFixed(1)}" y="${H-4}" font-size="9" fill="var(--muted)" text-anchor="middle">${k.slice(5)}</text>`;}).join('')}</svg>`;}
+ else pw.innerHTML='<p class="sub">Sin entradas de diario todavía.</p>';}
+
+/* ================= HISTÓRICO ================= */
+function allEntries(){const out=[];
+ DB.moods.forEach(m=>out.push({date:m.date,type:'Diario',tone:m.mood<=2?'bad':'ok',
+  txt:`Ánimo ${m.mood}/5 · ansiedad ${m.anx??'—'}/10 · energía ${m.en??'—'}/10 · sueño ${m.slp??'—'} h · cigarrillos ${m.cig??'—'} · ${(m.emos||[]).join(', ')}`,note:m.note}));
+ DB.dep.forEach(d=>out.push({date:d.date,type:'Depresión',tone:d.sev>=3?'bad':d.sev>=2?'warn':'ok',
+  txt:`${SEV[d.sev][0]}${d.symp.length?' · '+d.symp.join(', '):''}`,note:d.note}));
+ DB.ide.forEach(i=>out.push({date:i.date,type:'Ideación',tone:i.g>=3?'bad':'ok',txt:`Grado C‑SSRS ${i.g}/5 · ${i.f} episodios/semana`,note:i.note}));
+ DB.vitals.forEach(v=>out.push({date:dOf(v),type:'Constantes',tone:(v.s>=140||v.d>=90)?'bad':'ok',txt:`TA ${v.s}/${v.d} mmHg · ${v.ppm||'—'} ppm · ${bpClass(v.s,v.d)[0]}`}));
+ DB.tcc.forEach(t=>out.push({date:t.iso||dOf(t),type:'TCC',tone:'ok',txt:`${t.sit} → ${t.alt}`}));
+ DB.tasks.forEach(t=>out.push({date:t.d||iso(new Date()),type:'Tarea',tone:t.done?'ok':'warn',txt:`${t.t}${t.done?' ✓ hecha':''}`}));
+ DB.apts.forEach(a=>out.push({date:String(a.d).slice(0,10),type:'Cita',tone:'ok',txt:`${a.t}${a.done?' ✓ asistida':''}`}));
+ DB.chat.forEach(c=>out.push({date:iso(new Date(c.id)),type:'Mensaje',tone:'ok',txt:`${c.me?'Tú':'Profesional'}: ${c.e?'🔒 cifrado':c.t}`}));
+ DB.phq.forEach(e=>out.push({date:e.date,type:'PHQ‑9',tone:e.total>=15?'bad':e.total>=10?'warn':'ok',txt:`Total ${e.total}/27 · síntomas ${e.cat}`}));
+ DB.gad.forEach(e=>out.push({date:e.date,type:'GAD‑7',tone:e.total>=15?'bad':e.total>=10?'warn':'ok',txt:`Total ${e.total}/21 · ansiedad ${e.cat}`}));
+ return out.filter(e=>e.date).sort((a,b)=>a.date<b.date?1:a.date>b.date?-1:0);}
+function renderHistorico(){const sel=document.getElementById('hType');
+ if(!sel.options.length){[...new Set(allEntries().map(e=>e.type))].sort().forEach(t=>{const o=document.createElement('option');o.value=t;o.textContent=t;sel.appendChild(o);});}
+ const type=sel.value,from=hFrom.value,to=hTo.value,q=(hQ.value||'').toLowerCase().trim();
+ const rows=allEntries().filter(e=>(!type||e.type===type)&&(!from||e.date>=from)&&(!to||e.date<=to)&&
+  (!q||(e.txt+' '+(e.note||'')+' '+e.type).toLowerCase().includes(q)));
+ document.getElementById('hCount').textContent=`${rows.length} entrada(s)`;
+ renderList('hList',rows.slice(0,200),e=>`<div class="row" style="justify-content:space-between">
+  <b>${e.date}</b><span class="badge ${e.tone}">${e.type}</span></div>
+  <p style="margin:6px 0 0">${esc(e.txt)}</p>${e.note?`<p class="meta" style="margin:4px 0 0">${esc(e.note)}</p>`:''}`);
+ const agg={};rows.forEach(e=>agg[e.type]=(agg[e.type]||0)+1);
+ document.getElementById('hAgg').innerHTML=Object.keys(agg).length?Object.entries(agg).sort((a,b)=>b[1]-a[1])
+  .map(([t,n])=>`<div style="margin-bottom:8px"><div class="row" style="justify-content:space-between"><span>${t}</span><b class="meta">${n}</b></div>
+   <div class="bar"><i style="width:${Math.round(n/rows.length*100)}%;background:var(--brand-2)"></i></div></div>`).join('')
+  :'<p class="sub">Nada que resumir.</p>';}
+document.getElementById('hApply').onclick=renderHistorico;
+['hType','hFrom','hTo'].forEach(i=>document.getElementById(i).onchange=renderHistorico);
+document.getElementById('hQ').oninput=renderHistorico;
+document.getElementById('hClear').onclick=()=>{hType.value='';hFrom.value='';hTo.value='';hQ.value='';renderHistorico();};
+function histCsv(from){const esc2=s=>`"${String(s??'').replace(/"/g,'""')}"`;
+ const rows=allEntries().filter(e=>!from||e.date>=from);
+ return '\uFEFF'+[['fecha','tipo','detalle','nota'],...rows.map(e=>[e.date,e.type,esc2(e.txt),esc2(e.note||'')])].map(r=>r.join(',')).join('\n');}
+document.getElementById('hCsv').onclick=()=>dl(histCsv(hFrom.value),'relate-historico.csv','text/csv');
+document.getElementById('pvExportCsv').onclick=()=>dl(histCsv(null),'relate-historico.csv','text/csv');
+
+/* ================= INFORME · TESTS · PDF ================= */
+function renderTest(){
+ const g=x=>document.getElementById(x);
+ g('tabPhq').classList.toggle('on',tTab==='phq');g('tabGad').classList.toggle('on',tTab==='gad');
+ const items=tTab==='phq'?PHQ9:GAD7;
+ g('testItems').innerHTML=items.map((q,i)=>`<div class="qitem"><b>${i+1}.</b> ${q}
+  <div class="qopts">${FREQ.map((f,j)=>`<button data-q="${i}" data-v="${j}" class="${ans[i]===j?'on':''}">${j} · ${f}</button>`).join('')}</div></div>`).join('');
+ const tot=ans.slice(0,items.length).reduce((a,b)=>a+b,0),cat=(tTab==='phq'?CAT9:CAT7)(tot);
+ g('testNow').innerHTML=`Puntuación <b>${tot}/${items.length*3}</b> · síntomas <b style="color:${cat[1]}">${cat[0]}</b>
+  ${tTab==='phq'&&ans[8]>0?' · ⚠️ ítem 9 marcado: conviene valorar la seguridad hoy':''}`;
+ const store=tTab==='phq'?DB.phq:DB.gad;
+ g('testHist').innerHTML=store.length?`<h3>Historial de ${tTab==='phq'?'PHQ‑9':'GAD‑7'}</h3>
+  <table class="rep-t"><tr><th>Fecha</th><th>Total</th><th>Gravedad</th></tr>
+  ${store.slice().reverse().map(e=>`<tr><td>${e.date}</td><td>${e.total}</td><td>${e.cat}</td></tr>`).join('')}</table>
+  <div id="testChart" style="margin-top:12px"></div>`:'<p class="sub">Sin tests guardados todavía.</p>';
+ if(store.length)lineChart(document.getElementById('testChart'),seriesOf(tTab==='phq'?'phq':'gad',0),METRICS[tTab==='phq'?'phq':'gad']);}
+document.getElementById('testItems').addEventListener('click',e=>{const b=e.target.closest('[data-q]');
+ if(!b)return;ans[+b.dataset.q]=+b.dataset.v;renderTest();});
+document.getElementById('tabPhq').onclick=()=>{tTab='phq';ans=[0,0,0,0,0,0,0,0,0];renderTest();};
+document.getElementById('tabGad').onclick=()=>{tTab='gad';ans=[0,0,0,0,0,0,0,0,0];renderTest();};
+document.getElementById('testSave').onclick=async()=>{
+ const items=tTab==='phq'?PHQ9:GAD7,tot=ans.slice(0,items.length).reduce((a,b)=>a+b,0);
+ (tTab==='phq'?DB.phq:DB.gad).push({date:iso(new Date()),items:ans.slice(0,items.length),total:tot,cat:(tTab==='phq'?CAT9:CAT7)(tot)[0]});
+ await save();renderTest();
+ if(tTab==='phq'&&ans[8]>0)sheet(`<h3>Un paso más</h3><p>Has marcado el ítem 9 del PHQ‑9 (pensamientos de muerte o de hacerte daño). Eso merece comentarse <b>hoy</b> con alguien de confianza o un profesional.</p>
+  <div class="row" style="margin-top:10px"><a class="btn danger" href="tel:024">024 · 24 h</a><a class="btn" href="tel:112">112</a>
+  <button class="btn ghost" data-close>Ahora no</button></div>`);
+ else toast('Test guardado ✓');};
+document.getElementById('rOpts').innerHTML=ROPTS.map(([k,l])=>`<button class="tag on" data-opt="${k}">${l}</button>`).join('');
+document.getElementById('rOpts').onclick=e=>{const b=e.target.closest('[data-opt]');
+ if(!b)return;INC[b.dataset.opt]=!INC[b.dataset.opt];b.classList.toggle('on');};
+function buildReport(){
+ const g=x=>document.getElementById(x);
+ const days=g('rRange').value==='0'?3650:+g('rRange').value;
+ const from=days>=3650?null:iso(new Date(Date.now()-days*864e5));
+ const inPer=e=>{const d=dOf(e);return !from||d>=from;};
+ DB.profile={n:g('rName').value,p:g('rProf').value,c:g('rCenter').value};save();
+ const moods=DB.moods.filter(inPer),dep=DB.dep.filter(inPer),ide=DB.ide.filter(inPer),
+       vit=DB.vitals.filter(inPer),phq=DB.phq.filter(inPer),gad=DB.gad.filter(inPer);
+ let span=days;
+ if(days>=3650){const ds=allEntries().map(e=>e.date).sort();
+  if(ds.length)span=Math.max(1,Math.round((Date.now()-new Date(ds[0]+'T12:00'))/864e5)+1);}
+ const diasCon=new Set([...moods,...dep,...ide,...vit,...phq,...gad].map(dOf)).size;
+ const adh=span?Math.min(100,Math.round(diasCon/span*100)):0;
+ const H=[];
+ H.push(`<div class="rep-head"><img src="icons/icon.svg" alt="">
+  <div><h2 style="margin:0">Informe de seguimiento · Re‑Late</h2>
+  <div class="meta">Cuidado de la salud mental · generado el ${new Date().toLocaleString('es-ES')}</div></div></div>`);
+ H.push(`<div class="rep-meta"><div><b>Persona:</b> ${esc(DB.profile.n||'(sin nombre)')}</div>
+  <div><b>Profesional:</b> ${esc(DB.profile.p||'—')}</div><div><b>Centro:</b> ${esc(DB.profile.c||'—')}</div>
+  <div><b>Periodo:</b> ${from?from+' → '+iso(new Date()):'histórico completo'} (${span} días)</div>
+  <div><b>Entradas del periodo:</b> ${moods.length+dep.length+ide.length+vit.length+phq.length+gad.length}</div>
+  <div><b>Adherencia al registro:</b> ${adh}% (${diasCon}/${span} días)</div></div>`);
+ const kpi=[['Ánimo medio',(()=>{const m=mean(moods.map(x=>x.mood));return m?f1(m)+' / 5':'—';})()],
+  ['Ansiedad media',(()=>{const m=mean(moods.filter(x=>x.anx!=null).map(x=>x.anx));return m!=null?f1(m)+' / 10':'—';})()],
+  ['Sueño medio',(()=>{const m=mean(moods.filter(x=>x.slp!=null).map(x=>x.slp));return m!=null?f1(m)+' h':'—';})()],
+  ['Días ≥ moderada',dep.filter(d=>d.sev>=2).length+' / '+dep.length],
+  ['Ideación (máx)',ide.length?'grado '+Math.max(...ide.map(i=>i.g))+' / 5':'—'],
+  ['TA última',vit.length?vit[vit.length-1].s+'/'+vit[vit.length-1].d:'—'],
+  ['Cigarrillos/día',(()=>{const m=mean(moods.filter(x=>x.cig!=null).map(x=>x.cig));return m!=null?f1(m):'—';})()],
+  ['PHQ‑9 último',phq.length?phq[phq.length-1].total+' ('+phq[phq.length-1].cat+')':'—'],
+  ['GAD‑7 último',gad.length?gad[gad.length-1].total+' ('+gad[gad.length-1].cat+')':'—']];
+ if(INC.animo||INC.dep||INC.ide||INC.vit||INC.sue||INC.cig||INC.test)
+  H.push('<h4>1 · Indicadores del periodo</h4><table class="rep-t"><tr>'+kpi.map(x=>`<th>${x[0]}</th>`).join('')+'</tr><tr>'+kpi.map(x=>`<td>${x[1]}</td>`).join('')+'</tr></table>');
+ const rows=progRows(span);
+ if(rows)H.push(`<h4>2 · Progreso (periodo actual vs. anterior)</h4>
+  <p class="meta" style="margin:0 0 4px">En ánimo, energía y sueño <b>subir</b> es mejora; en el resto, <b>bajar</b> es mejora.</p>
+  <table class="rep-t"><tr><th>Métrica</th><th>Actual</th><th>Previa</th><th>Cambio</th></tr>${rows}</table>`);
+ const CH=[];
+ if(INC.animo)CH.push(['cAnimo','animo'],['cAnsia','ansiedad']);
+ if(INC.sue)CH.push(['cSueno','sueno'],['cEnerg','energia']);
+ if(INC.dep)CH.push(['cDep','depresion']);
+ if(INC.ide)CH.push(['cIde','ideacion']);
+ if(INC.test)CH.push(['cPhq','phq'],['cGad','gad']);
+ if(INC.vit)CH.push(['cTa','ta']);
+ if(INC.cig)CH.push(['cCig','tabaco']);
+ if(CH.length)H.push('<h4>3 · Gráficas de evolución</h4>'+CH.map(x=>`<div id="${x[0]}" style="margin-bottom:10px"></div>`).join(''));
+ if(INC.dep&&dep.length)H.push('<h4>4 · Días con depresión</h4><table class="rep-t"><tr><th>Fecha</th><th>Gravedad</th><th>Síntomas</th><th>Nota</th></tr>'+
+  dep.slice().reverse().map(d=>`<tr><td>${d.date}</td><td>${SEV[d.sev][0]} (${d.sev})</td><td>${esc(d.symp.join(', '))||'—'}</td><td>${esc(d.note||'')}</td></tr>`).join('')+'</table>');
+ if(INC.ide&&ide.length)H.push('<h4>Ideación autolítica</h4><table class="rep-t"><tr><th>Fecha</th><th>Grado</th><th>Episodios/sem</th><th>Nota</th></tr>'+
+  ide.slice().reverse().map(i=>`<tr><td>${i.date}</td><td>${i.g} / 5</td><td>${i.f}</td><td>${esc(i.note||'')}</td></tr>`).join('')+'</table>');
+ if(INC.vit&&vit.length)H.push('<h4>Constantes</h4><table class="rep-t"><tr><th>Fecha</th><th>TA</th><th>ppm</th><th>Clasificación</th></tr>'+
+  vit.slice().reverse().slice(0,40).map(v=>`<tr><td>${dOf(v)}</td><td>${v.s}/${v.d}</td><td>${v.ppm||'—'}</td><td>${bpClass(v.s,v.d)[0]}</td></tr>`).join('')+'</table>');
+ if(INC.ent&&moods.length)H.push('<h4>Entradas de diario</h4><table class="rep-t"><tr><th>Fecha</th><th>Ánimo</th><th>Ansiedad</th><th>Sueño</th><th>Cig.</th><th>Nota</th></tr>'+
+  moods.slice().reverse().slice(0,60).map(m=>`<tr><td>${m.date}</td><td>${m.mood}/5</td><td>${m.anx??'—'}</td><td>${m.slp??'—'}</td><td>${m.cig??'—'}</td><td>${esc((m.note||'').slice(0,120))}</td></tr>`).join('')+'</table>');
+ H.push(`<h4>5 · Observaciones de la persona</h4><p style="white-space:pre-wrap">${esc(g('rNotes').value)||'—'}</p>
+  <div class="rep-foot">Documento generado localmente en el dispositivo a partir de datos cifrados en <code>localStorage</code>. Re‑Late es una herramienta de seguimiento: <b>no realiza diagnóstico clínico</b>; PHQ‑9, GAD‑7 y el grado de ideación son instrumentos de autoinforme. Ningún dato se ha transmitido a terceros.
+  Autor: Miguel Ángel Layunta López · Zaragoza · 2026 · Riesgo vital: <b>112</b> · Conducta suicida: <b>024</b>.</div>`);
+ g('repDoc').innerHTML=H.join('');
+ CH.forEach(x=>lineChart(document.getElementById(x[0]),seriesOf(x[1],span),METRICS[x[1]]));}
+document.getElementById('rBuild').onclick=buildReport;
+document.getElementById('rPdf').onclick=()=>{buildReport();go('informe');setTimeout(()=>window.print(),400);};
+document.getElementById('rCsv').onclick=()=>{const days=document.getElementById('rRange').value==='0'?3650:+document.getElementById('rRange').value;
+ dl(histCsv(days>=3650?null:iso(new Date(Date.now()-days*864e5))),'relate-informe-'+iso(new Date())+'.csv','text/csv');};
+
+/* ================= TCC / TAREAS ================= */
+document.getElementById('tSave').onclick=async()=>{const d=new Date();
+ DB.tcc.push({id:+d,iso:iso(d),date:d.toLocaleDateString('es-ES'),sit:tSit.value,emo:tEmo.value,auto:tAuto.value,dist:tDist.value,
+  pro:tPro.value,con:tCon.value,alt:tAlt.value,re:+tRe.value});
+ ['tSit','tEmo','tAuto','tPro','tCon','tAlt'].forEach(i=>document.getElementById(i).value='');await save();go('tcc');};
+document.getElementById('taskAdd').onclick=async()=>{if(!taskT.value)return;
+ DB.tasks.push({id:Date.now(),t:taskT.value,d:taskD.value,done:false});await save();go('tcc');};
+document.addEventListener('click',e=>{if(e.target.dataset.delTask!=null){
+ DB.tasks=DB.tasks.filter(t=>t.id!=e.target.dataset.delTask);save().then(()=>go('tcc'));}});
+
+/* ================= CRISIS ================= */
+const STEPS=[['Respira','Frena y haz 3 respiraciones lentas.'],['Grounding','5‑4‑3‑2‑1 con los sentidos.'],['Nombrar','Di qué sientes sin juzgarlo.'],
+['Contacto','Llama a alguien de tu plan.'],['Ayuda','Si no puedes, llama al 024 o 112.']];
+let stepDone=[false,false,false,false,false];
+function renderCrisis(){document.getElementById('crisisSteps').innerHTML=STEPS.map((s,i)=>
+ `<div class="s${stepDone[i]?' done':''}"><b>${i+1}. ${s[0]}</b><div class="meta">${s[1]}</div>
+  <button class="btn sm ghost" data-step="${i}">${stepDone[i]?'Hecho ✓':'Marcar'}</button></div>`).join('');
+ document.getElementById('crisisBody').innerHTML=`<button class="btn" id="openBreath">Respiración guiada</button>
+  <a class="btn danger" href="tel:024" style="margin-left:8px">024</a><a class="btn" href="tel:112" style="margin-left:8px">112</a>
+  <a class="btn ghost" href="tel:976232828" style="margin-left:8px">Zaragoza · T. Esperanza</a>`;
+ document.getElementById('openBreath').onclick=()=>breath('478');
+ const items=['5 cosas que VES','4 que PUEDES TOCAR','3 que OYES','2 que HUELES','1 que SABOREAS'];
+ document.getElementById('ground').innerHTML=items.map((t,i)=>`<div class="row" style="margin:6px 0">
+  <span style="min-width:180px">${t}</span><input type="text" id="g${i}" style="flex:1"></div>`).join('')+
+  `<button class="btn sm ghost" id="gClear">Limpiar</button>`;}
+document.addEventListener('click',e=>{
+ const s=e.target.dataset.step;if(s!=null){stepDone[+s]=!stepDone[+s];renderCrisis();}
+ if(e.target.id==='gClear')[0,1,2,3,4].forEach(i=>{const el=document.getElementById('g'+i);if(el)el.value='';});
+ if(e.target.dataset.b)breath(e.target.dataset.b);
+ const o=e.target.dataset.open;
+ if(o==='calendario'){go('calendario');openDay(iso(new Date()));}
+ else if(o)go(o);});
+document.getElementById('crisisGeo').onclick=()=>getPos(g=>document.getElementById('crisisGeoOut').textContent=
+ `Dicta al 112: ${g.lat.toFixed(5)}, ${g.lon.toFixed(5)} (±${Math.round(g.acc)} m)`);
+let bTimer=null;
+function breath(kind){clearTimeout(bTimer);const el=document.getElementById('breath');
+ const seq=kind==='box'?[['Inhala',4000,'in'],['Mantén',4000,''],['Exhala',4000,'out'],['Mantén',4000,'']]
+ :[['Inhala',4000,'in'],['Mantén',7000,''],['Exhala',8000,'out']];let i=0;
+ (function tick(){if(i>=seq.length)i=0;const[n,t,cls]=seq[i];el.className='breath '+cls;el.textContent=n;bTimer=setTimeout(()=>{i++;tick();},t);})();
+ document.getElementById('bStop').onclick=()=>{clearTimeout(bTimer);el.className='breath';el.textContent='Listo';};}
+document.getElementById('pSave').onclick=async()=>{DB.plan={pSign:pSign.value,pStrat:pStrat.value,pWhy:pWhy.value,pPeople:pPeople.value};
+ await save();toast('Plan guardado ✓');};
+
+/* ================= SESIÓN ================= */
+let e2e=null;
+document.getElementById('e2eSet').onclick=async()=>{const p=e2eKey.value;if(!p)return toast('Escribe la clave de sesión');
+ e2e=await derive(p,crypto.getRandomValues(new Uint8Array(16)));toast('Cifrado de chat activado ✓');};
+async function e2eEnc(t){const iv=crypto.getRandomValues(new Uint8Array(12));
+ const ct=await crypto.subtle.encrypt({name:'AES-GCM',iv},e2e,enc.encode(t));return b64(iv)+'.'+b64(ct);}
+async function e2eDec(s){const[i,c]=s.split('.');return dec.decode(await crypto.subtle.decrypt({name:'AES-GCM',iv:i64(i)},e2e,i64(c)));}
+async function renderChat(){const box=document.getElementById('chatBox');box.innerHTML='';
+ for(const m of DB.chat){const el=document.createElement('div');el.className='msg'+(m.me?' me':'');let txt=m.t;
+  if(m.e&&e2e){try{txt=await e2eDec(m.t);}catch(_){txt='🔒 cifrado (otra clave)';}}
+  el.textContent=(m.me?'Tú: ':'Profesional: ')+txt+' · '+m.ts;box.appendChild(el);}box.scrollTop=box.scrollHeight;}
+document.getElementById('chatSend').onclick=async()=>{const v=chatIn.value.trim();if(!v)return;
+ DB.chat.push({id:Date.now(),me:true,ts:new Date().toLocaleTimeString('es-ES'),t:e2e?await e2eEnc(v):v,e:!!e2e});chatIn.value='';
+ if(simPro.checked)setTimeout(async()=>{const r='Recibido. Lo trabajamos en la próxima sesión. 💚';
+  DB.chat.push({id:Date.now(),me:false,ts:new Date().toLocaleTimeString('es-ES'),t:e2e?await e2eEnc(r):r,e:!!e2e});await save();renderChat();},900);
+ await save();renderChat();};
+document.getElementById('vcGo').onclick=()=>{const seed=e2eKey.value||'relate-demo';
+ window.open('https://meet.jit.si/ReLate-'+btoa(unescape(encodeURIComponent(seed))).replace(/[^a-zA-Z0-9]/g,'').slice(0,12),'_blank','noopener');};
+document.getElementById('apAdd').onclick=async()=>{if(!apT.value||!apD.value)return;
+ DB.apts.push({id:Date.now(),t:apT.value,d:apD.value,done:false});await save();go('sesion');};
+document.getElementById('apPerm').onclick=()=>'Notification'in window
+ ?Notification.requestPermission().then(p=>toast(p==='granted'?'Notificaciones activadas ✓':'Permiso denegado')):toast('Sin soporte de notificaciones');
+function renderApts(){document.getElementById('apList').innerHTML=DB.apts.map(a=>
+ `<div class="row" style="justify-content:space-between"><span>${esc(a.t)} <small class="meta">· ${new Date(a.d).toLocaleString('es-ES')}</small></span>
+  <button class="btn sm ghost" data-ap="${a.id}">✓</button></div>`).join('')||'<p class="sub">Sin citas.</p>';}
+document.addEventListener('click',e=>{if(e.target.dataset.ap){const a=DB.apts.find(x=>x.id==e.target.dataset.ap);
+ if(a){a.done=true;save().then(()=>go('sesion'));}}});
+setInterval(()=>{const now=Date.now();DB.apts.forEach(a=>{if(!a.done&&a.d){const t=new Date(a.d).getTime()-now;
+ if(t>0&&t<9e5){if('Notification'in window&&Notification.permission==='granted')new Notification('Re‑Late',{body:'Cita en breve: '+a.t});
+  toast('⏰ '+a.t);a.done=true;save();}}});},60000);
+
+/* ================= RECURSOS ================= */
+const LINKS={est:[['Línea 024 · conducta suicida (24 h, gratuita, confidencial)','https://www.sanidad.gob.es/linea024/home.htm','Ministerio de Sanidad'],
+ ['Línea 024 · Cruz Roja Española','https://www2.cruzroja.es/en/linea024','Cruz Roja'],
+ ['Teléfono de la Esperanza (nacional)','https://telefonodelaesperanza.org/','Asociación estatal']],
+ arag:[['Teléfono de la Esperanza · Aragón (Zaragoza)','https://telefonodelaesperanza.org/aragon/contacto','976 232 828'],
+ ['Estrategia de Salud Mental · Gobierno de Aragón','https://www.aragon.es/-/estrategia-de-salud-mental','Salud Aragón'],
+ ['Plataforma de Salud Mental de Aragón','https://aragonsaludmental.org/','Entidades y familias'],
+ ['Teléfono de la Esperanza Aragón · Gobierno Abierto','https://gobiernoabierto.aragon.es/agoab/entidades/232476500000','Ficha oficial']],
+ rgpd:[['AEPD · Guía para profesionales del sector sanitario','https://www.aepd.es/guias/guia-profesionales-sector-sanitario.pdf','RGPD · datos de salud'],
+ ['AEPD · Nota técnica sobre apps móviles','https://www.aepd.es/guias/nota-tecnica-apps-moviles.pdf','Información art. 13‑14'],
+ ['AEPD · Guía para pacientes y usuarios','https://www.aepd.es/guias/guia-pacientes-usuarios-sanidad.pdf','Derechos del usuario']],
+ mind:[['Plataforma de Salud Mental de Aragón · materiales','https://aragonsaludmental.org/','Psicoeducación'],
+ ['Teléfono de la Esperanza Aragón · apoyo emocional','https://telefonodelaesperanza.org/aragon/','Escucha']]};
+const LMAP={est:'lEst',arag:'lArag',rgpd:'lRGPD',mind:'lMind'};
+function renderLinks(){for(const g of Object.keys(LMAP)){const c=document.getElementById(LMAP[g]);if(!c)continue;
+ c.innerHTML=LINKS[g].map(([t,u,s])=>`<a href="${u}" target="_blank" rel="noopener noreferrer"><span>🔗 ${t}</span><small>${s} ↗</small></a>`).join('');}}
+document.getElementById('mindGo').onclick=()=>{let s=120;const el=document.getElementById('mindT');
+ const iv=setInterval(()=>{s--;el.textContent=`Observa tu respiración y tus pensamientos sin juzgarlos · ${s}s`;
+  if(s<=0){clearInterval(iv);el.textContent='Bien hecho. 🌿';}},1000);};
+
+/* ================= PRIVACIDAD ================= */
+document.getElementById('pvExport').onclick=()=>dl(JSON.stringify(DB,null,2),'relate-datos.json','application/json');
+document.getElementById('pvWipe').onclick=()=>{if(!confirm('¿Borrar TODOS tus datos de este dispositivo? No se puede deshacer.'))return;
+ localStorage.clear();location.reload();};
+
+/* ================= UI / HELPERS ================= */
+let fs=17;document.getElementById('tText').onclick=()=>{fs=fs===17?20:fs===20?23:17;document.documentElement.style.setProperty('--fs',fs+'px');};
+document.getElementById('tContrast').onclick=()=>{const h=document.documentElement;h.dataset.contrast=h.dataset.contrast==='alto'?'':'alto';};
+document.getElementById('tTheme').onclick=()=>{const h=document.documentElement;h.dataset.theme=h.dataset.theme==='noche'?'calma':'noche';};
+document.getElementById('tMotion').onclick=()=>{const h=document.documentElement;h.dataset.motion=h.dataset.motion==='off'?'':'off';};
+document.getElementById('tLock').onclick=()=>{K=null;['shell','sos'].forEach(i=>document.getElementById(i).classList.add('hide'));
+ document.getElementById('lock').classList.remove('hide');document.getElementById('lPass').focus();};
+document.getElementById('sos').onclick=()=>go('crisis');
+document.addEventListener('keydown',e=>{if((e.key==='s'||e.key==='S')&&!/INPUT|TEXTAREA|SELECT/.test(e.target.tagName))go('crisis');});
+function esc(s){return String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+function renderList(id,arr,fn){const el=document.getElementById(id);if(el)el.innerHTML=arr.map(fn).join('')||'<p class="sub">Nada todavía.</p>';}
+function sheet(html){document.getElementById('ovSheet').innerHTML=html;document.getElementById('ov').classList.add('on');}
+function closeSheet(){document.getElementById('ov').classList.remove('on');}
+document.getElementById('ov').addEventListener('click',e=>{if(e.target.id==='ov'||e.target.dataset.close!==undefined)closeSheet();});
+function dl(content,name,type){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([content],{type}));a.download=name;a.click();}
+async function copy(t,msg){try{await navigator.clipboard.writeText(t);if(msg)toast(msg);}catch(_){prompt('Copia esto:',t);}}
+function toast(t){sheet(`<h3>${t}</h3><div class="row"><button class="btn" data-close>Cerrar</button></div>`);}
+
+/* ================= PWA ================= */
+if('serviceWorker'in navigator)addEventListener('load',()=>{
+ navigator.serviceWorker.register('./sw.js',{scope:'./'}).then(reg=>{
+  reg.addEventListener('updatefound',()=>{const nw=reg.installing;
+   nw&&nw.addEventListener('statechange',()=>{if(nw.state==='installed'&&navigator.serviceWorker.controller)toast('Nueva versión disponible · recarga para actualizar');});});
+  let deferred;addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferred=e;
+   const b=document.createElement('button');b.className='chip';b.textContent='⤓ Instalar';
+   b.onclick=()=>{deferred.prompt();deferred=null;b.remove();};document.querySelector('.tools').appendChild(b);});
+ }).catch(()=>{});});
+
+/* ================= ARRANQUE ================= */
+(async()=>{renderConsent();
+ if(localStorage.getItem(SKEY)){const ok=await load();
+  if(ok)enter();else{document.getElementById('consent').classList.add('hide');
+   document.getElementById('lock').classList.remove('hide');document.getElementById('lPass').focus();}}})();
+</script>
+</body>
+</html>
