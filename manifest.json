@@ -1,0 +1,26 @@
+{
+  "name": "Re‑Late · Cuidado de la Salud Mental",
+  "short_name": "Re‑Late",
+  "description": "App local-first: diario, calendario de depresión, constantes, medicación y adherencia, PHQ-9/GAD-7, informe PDF. Datos cifrados en tu dispositivo.",
+  "id": "relate-salud-mental",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "lang": "es",
+  "background_color": "#f6f4ef",
+  "theme_color": "#2f7d63",
+  "categories": ["health", "medical"],
+  "icons": [
+    { "src": "icons/favicon-32.png", "sizes": "32x32", "type": "image/png" },
+    { "src": "icons/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "icons/apple-touch-icon-180.png", "sizes": "180x180", "type": "image/png" },
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "Registrar hoy", "url": "./index.html#calendario", "icons": [{ "src": "icons/icon.svg", "sizes": "any" }] },
+    { "name": "Medicación", "url": "./index.html#medicacion", "icons": [{ "src": "icons/icon.svg", "sizes": "any" }] },
+    { "name": "Protocolo de calma", "url": "./index.html#crisis", "icons": [{ "src": "icons/icon.svg", "sizes": "any" }] }
+  ]
+}
