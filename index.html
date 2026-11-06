@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="calma">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Re-Late · Cuidado de la Salud Mental</title>
+<meta name="description" content="App local-first de salud mental: diario, calendario de depresión por gravedad, constantes, control de medicación y adherencia, ideación autolítica, PHQ-9 y GAD-7, gráficas de progreso, histórico e informe exportable a PDF.">
+<meta name="author" content="Miguel Ángel Layunta López">
+<meta name="referrer" content="no-referrer">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; frame-src 'none'; form-action 'none'; img-src 'self' data: blob:; style-src 'self' 'unsafe-inline'; script-src 'self'; connect-src 'self'; worker-src 'self'; manifest-src 'self'">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#2f7d63">
+<meta name="color-scheme" content="light dark">
+<link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+<link rel="alternate icon" href="icons/favicon-32.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon-180.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Re-Late">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<style>
+:root{--fs:17px;--bg:#f6f4ef;--panel:#fff;--ink:#26302c;--muted:#5c6b64;--brand:#2f7d63;--brand-2:#4fa886;
+--accent:#c98a3d;--danger:#b4342e;--line:#e3ded4;--soft:#eef3ee;--shadow:0 10px 30px rgba(38,48,44,.08);--radius:16px;--maxw:1240px;
+--s0:rgba(47,125,99,.12);--s1:rgba(47,125,99,.28);--s2:rgba(201,138,61,.32);--s3:rgba(180,52,46,.30);--s4:rgba(180,52,46,.52)}
+[data-theme=noche]{--bg:#151b19;--panel:#1d2522;--ink:#e8ede9;--muted:#a9b7b0;--line:#2c3733;--soft:#222b28;--shadow:0 10px 30px rgba(0,0,0,.45)}
+[data-contrast=alto]{--bg:#fff;--panel:#fff;--ink:#000;--muted:#222;--brand:#08553a;--line:#000;--soft:#eee}
+*{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--ink);font-size:var(--fs);line-height:1.6;
+font-family:ui-sans-serif,system-ui,"Segoe UI",Roboto,Arial,sans-serif}button,input,select,textarea{font:inherit;color:inherit}a{color:var(--brand)}
+.app{max-width:var(--maxw);margin:0 auto;padding:14px}
+header.top{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;background:var(--panel);
+border:1px solid var(--line);border-radius:var(--radius);padding:10px 14px;box-shadow:var(--shadow);position:sticky;top:8px;z-index:40}
+.logo{display:flex;gap:10px;align-items:center;font-weight:800}.logo img{width:40px;height:40px;border-radius:12px;display:block}
+.tools{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.chip{border:1px solid var(--line);background:var(--panel);border-radius:999px;padding:6px 10px;cursor:pointer;font-size:.85em}
+.chip:hover{border-color:var(--brand)}
+main{display:grid;grid-template-columns:238px 1fr;gap:16px;margin-top:16px}
+@media(max-width:920px){main{grid-template-columns:1fr}.side{position:static!important}}
+.side{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:10px;box-shadow:var(--shadow);position:sticky;top:86px;align-self:start}
+.side a{display:flex;gap:10px;align-items:center;width:100%;text-align:left;padding:9px;border-radius:12px;cursor:pointer;color:var(--muted);text-decoration:none}
+.side a:hover,.side a.on{background:var(--soft);color:var(--ink);font-weight:700}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow);margin-bottom:16px}
+.card h2{margin:0 0 4px;font-size:1.25em}.card h3{margin:0 0 6px;font-size:1.05em}
+.sub{color:var(--muted);font-size:.92em;margin:0 0 14px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+@media(max-width:760px){.grid2,.grid4{grid-template-columns:1fr 1fr}}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.btn{background:var(--brand);color:#fff;border:0;border-radius:12px;padding:11px 16px;cursor:pointer;font-weight:700;text-decoration:none;display:inline-block}
+.btn:hover{filter:brightness(1.08)}.btn.ghost{background:var(--soft);color:var(--ink);border:1px solid var(--line);font-weight:600}
+.btn.danger{background:var(--danger)}.btn.sm{padding:7px 11px;font-size:.9em;border-radius:10px}
+label{display:block;font-weight:600;margin:10px 0 4px;font-size:.92em}
+input[type=text],input[type=password],input[type=number],input[type=date],input[type=datetime-local],select,textarea{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:var(--bg)}
+textarea{min-height:84px;resize:vertical}
+.moods{display:flex;gap:8px;flex-wrap:wrap}.moods button{width:52px;height:52px;border-radius:14px;border:2px solid var(--line);background:var(--bg);font-size:1.5em;cursor:pointer}
+.moods button.on{border-color:var(--brand);background:var(--soft);transform:scale(1.06)}
+.tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px}
+.tag{border:1px solid var(--line);background:var(--bg);border-radius:999px;padding:6px 11px;cursor:pointer;font-size:.85em}
+.tag.on{background:var(--brand);color:#fff;border-color:var(--brand)}
+.list{display:flex;flex-direction:column;gap:10px;margin-top:10px}
+.item{border:1px solid var(--line);border-radius:12px;padding:12px;background:var(--bg)}
+.item .meta,.meta{color:var(--muted);font-size:.82em}.item h4{margin:0 0 4px}
+.badge{display:inline-block;border-radius:999px;padding:2px 9px;font-size:.75em;font-weight:700;background:var(--soft);border:1px solid var(--line)}
+.badge.bad{background:var(--s4);border-color:transparent}.badge.warn{background:var(--s2);border-color:transparent}.badge.ok{background:var(--s1);border-color:transparent}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}@media(max-width:760px){.stats{grid-template-columns:repeat(2,1fr)}}
+.stat{border:1px solid var(--line);border-radius:12px;padding:12px;text-align:center;background:var(--bg)}
+.stat b{font-size:1.4em;display:block;color:var(--brand)}.stat span{color:var(--muted);font-size:.8em}
+.calbar{display:flex;gap:8px;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap}
+.calTitle{font-weight:800;text-transform:capitalize}
+.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+.cal .hd{font-size:.75em;color:var(--muted);text-align:center;font-weight:800;text-transform:uppercase}
+.cell{aspect-ratio:1/1;border:1px solid var(--line);border-radius:10px;background:var(--bg);padding:4px 5px;cursor:pointer;display:flex;flex-direction:column;justify-content:space-between;font-size:.8em;min-height:44px}
+.cell.empty{border:0;background:transparent;cursor:default}.cell.today{box-shadow:0 0 0 2px var(--brand)}
+.cell.s0{background:var(--s0)}.cell.s1{background:var(--s1)}.cell.s2{background:var(--s2)}.cell.s3{background:var(--s3)}.cell.s4{background:var(--s4)}
+.cell .dd{font-weight:700}.cell .sy{font-size:.62em;color:var(--muted);overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.legend{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;font-size:.8em;color:var(--muted)}
+.legend i{width:16px;height:16px;border-radius:5px;display:inline-block;margin-right:4px;vertical-align:-3px;border:1px solid var(--line)}
+.bar{height:9px;border-radius:999px;background:var(--soft);overflow:hidden;margin-top:4px}.bar>i{display:block;height:100%}
+.sevRow{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.sev{border:2px solid var(--line);background:var(--bg);border-radius:12px;padding:8px 4px;cursor:pointer;display:flex;flex-direction:column;gap:2px;align-items:center;font-size:.78em;font-weight:700}
+.sev small{color:var(--muted);font-weight:500;font-size:.85em}.sev.on{border-color:var(--ink)}
+.sev.s0{background:var(--s0)}.sev.s1{background:var(--s1)}.sev.s2{background:var(--s2)}.sev.s3{background:var(--s3)}.sev.s4{background:var(--s4)}
+.sos{position:fixed;right:18px;bottom:18px;z-index:60;background:var(--danger);color:#fff;border:0;border-radius:999px;padding:16px 20px;font-weight:900;cursor:pointer;box-shadow:0 12px 28px rgba(180,52,46,.42)}
+.overlay{position:fixed;inset:0;background:rgba(10,15,13,.55);display:none;place-items:center;z-index:70;padding:14px}
+.overlay.on{display:grid}.sheet{background:var(--panel);border-radius:20px;max-width:660px;width:100%;max-height:92vh;overflow:auto;padding:20px;border:1px solid var(--line)}
+.breath{width:210px;height:210px;border-radius:50%;margin:18px auto;display:grid;place-items:center;background:radial-gradient(circle,var(--soft),transparent 70%);border:3px solid var(--brand);transition:transform 4s ease-in-out;font-weight:800;color:var(--brand);text-align:center}
+.breath.in{transform:scale(1.25)}.breath.out{transform:scale(.8)}
+.steps{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}.steps .s{flex:1;min-width:150px;border:1px solid var(--line);border-radius:12px;padding:10px;background:var(--bg)}
+.steps .s.done{border-color:var(--brand);background:var(--soft)}
+.msg{max-width:78%;padding:10px 14px;border-radius:16px;margin:6px 0;background:var(--soft)}.msg.me{margin-left:auto;background:var(--brand);color:#fff}
+.lock{max-width:500px;margin:6vh auto}
+.note{border-left:4px solid var(--accent);background:var(--soft);padding:10px 14px;border-radius:0 12px 12px 0;font-size:.92em}
+.warn{border-left:4px solid var(--danger);background:var(--soft);padding:12px 14px;border-radius:0 12px 12px 0}
+.links{display:grid;gap:8px}.links a{display:flex;justify-content:space-between;gap:10px;border:1px solid var(--line);border-radius:12px;padding:10px 12px;text-decoration:none;color:var(--ink);background:var(--bg)}
+.links a:hover{border-color:var(--brand)}.links small{color:var(--muted)}
+footer{text-align:center;color:var(--muted);font-size:.85em;padding:22px}
+.hide{display:none!important}:focus-visible{outline:3px solid var(--brand-2);outline-offset:2px}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+[data-motion=off] *{transition:none!important;animation:none!important}
+/* ===== INFORME · TESTS · PDF ===== */
+.rep-head{display:flex;gap:14px;align-items:center;border-bottom:2px solid var(--brand);padding-bottom:12px;margin-bottom:14px}
+.rep-head img{width:58px;height:58px;border-radius:14px}
+.rep-meta{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;font-size:.88em;color:var(--muted);margin-bottom:14px}
+#repDoc h4{margin:20px 0 6px;font-size:1em;border-left:4px solid var(--brand);padding-left:8px}
+table.rep-t{width:100%;border-collapse:collapse;font-size:.85em;margin-top:6px}
+table.rep-t th,table.rep-t td{border:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}
+table.rep-t th{background:var(--soft)}
+.qitem{border:1px solid var(--line);border-radius:12px;padding:10px 12px;background:var(--bg);margin-bottom:8px}
+.qopts{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:8px}
+.qopts button{border:1px solid var(--line);background:var(--panel);border-radius:10px;padding:7px 4px;cursor:pointer;font-size:.8em}
+.qopts button.on{background:var(--brand);color:#fff;border-color:var(--brand)}
+.delta.better{color:var(--brand);font-weight:800}.delta.worse{color:var(--danger);font-weight:800}.delta.flat{color:var(--muted);font-weight:700}
+.rep-foot{margin-top:18px;border-top:1px solid var(--line);padding-top:10px;font-size:.8em;color:var(--muted)}
+@media print{
+ @page{margin:14mm}
+ html,body{background:#fff!important;font-size:12px}
+ .no-print,header.top,.side,.nav,.tools,.sos,.overlay,footer{display:none!important}
+ main{display:block!important;gap:0;margin:0}.app{max-width:none;padding:0}
+ .view{display:none!important}.view[data-v=informe]{display:block!important}
+ .card{box-shadow:none!important;border:1px solid #ddd!important;break-inside:avoid;page-break-inside:avoid;margin-bottom:10px}
+ #repWrap{border:0!important;padding:0!important;box-shadow:none!important}
+ *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
+ a{color:#000!important;text-decoration:none!important}
+}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- CONSENTIMIENTO Y CONFIGURACIÓN INICIAL (SIN ENCRIPTACIÓN TÉCNICA) -->
+  <div id="consent" class="lock card">
+    <div class="logo" style="margin-bottom:8px"><img src="icons/icon.svg" alt=""> Re‑Late</div>
+    <h2>Asociación Re‑Late · Acceso Privado</h2>
+    <p class="sub">Aplicación de seguimiento y bienestar para socios. Tus registros se guardan de forma local y segura en este dispositivo.</p>
+    <div class="note">Crea una <b>contraseña sencilla</b> para proteger tus datos personales. Anótala bien para poder entrar cada vez que uses la aplicación.</div>
+    
+    <label for="cPass">Contraseña de acceso</label>
+    <input type="password" id="cPass" placeholder="Introduce tu contraseña" autocomplete="new-password">
+    
+    <label for="cPass2">Repite la contraseña</label>
+    <input type="password" id="cPass2" placeholder="Vuelve a escribir la contraseña" autocomplete="new-password">
+    
+    <label class="row" style="font-weight:600;margin-top:12px">
+      <input type="checkbox" id="cAll" style="width:auto"> Acepto el uso de la aplicación para el seguimiento de salud.
+    </label>
+    
+    <div class="row" style="margin-top:14px">
+      <button class="btn" id="cGo">Entrar a la aplicación</button>
+      <button class="btn ghost" id="cDemo">Modo demostración (sin clave)</button>
+    </div>
+    <p class="meta" id="cErr" style="color:var(--danger)" role="alert"></p>
+  </div>
+
+  <!-- BLOQUEO / ACCESO -->
+  <div id="lock" class="lock card hide">
+    <div class="logo" style="margin-bottom:8px"><img src="icons/icon.svg" alt=""> Re‑Late</div>
+    <h2>Acceso Protegido</h2>
+    <p class="sub">Introduce tu contraseña para acceder a tus registros.</p>
+    
+    <label for="lPass">Contraseña</label>
+    <input type="password" id="lPass" placeholder="Tu contraseña" autocomplete="current-password">
+    
+    <div class="row" style="margin-top:12px">
+      <button class="btn" id="lGo">Entrar</button>
+      <button class="btn ghost" id="lDemo">Entrar en Modo Demostración</button>
+    </div>
+    <p class="meta" id="lErr" style="color:var(--danger)" role="alert"></p>
+  </div>
+
+  <!-- APP PRINCIPAL -->
+  <div id="shell" class="hide">
+    <header class="top">
+      <div class="logo"><img src="icons/icon.svg" alt="Re-Late"> Re‑Late <small style="font-weight:500;color:var(--muted)">salud mental</small></div>
+      <nav class="nav hide" id="navTop" aria-label="Navegación principal"></nav>
+      <div class="tools">
+        <button class="chip" id="tText" title="Tamaño de texto" aria-label="Cambiar tamaño de texto">Aa</button>
+        <button class="chip" id="tContrast" title="Alto contraste" aria-label="Activar alto contraste">◐</button>
+        <button class="chip" id="tTheme" title="Modo noche" aria-label="Activar modo noche">☾</button>
+        <button class="chip" id="tMotion" title="Reducir movimiento" aria-label="Reducir movimiento">≈</button>
+        <button class="chip" id="tLock" title="Bloquear" aria-label="Bloquear la aplicación">🔒</button>
+      </div>
+    </header>
+
+    <main>
+      <aside class="side" id="navSide" aria-label="Secciones"></aside>
+      <section id="views">
+
+        <!-- RESUMEN -->
+        <div class="view" data-v="home">
+          <div class="card"><h2>Hola 👋</h2>
+            <p class="sub">Si algo te desborda, el botón <b>SOS</b> (tecla <b>S</b>) abre respiración, grounding, tus constantes y ayuda inmediata.</p>
+            <div class="stats" id="homeStats"></div>
+            <div class="row" style="margin-top:14px">
+              <button class="btn" data-open="calendario">📅 Registrar hoy</button>
+              <button class="btn ghost" data-open="diario">✎ Diario</button>
+              <button class="btn ghost" data-open="medicacion">💊 Medicación</button>
+              <button class="btn ghost" data-open="graficos">📈 Gráficas</button>
+              <button class="btn ghost" data-open="informe">📄 Informe</button>
+              <button class="btn ghost" data-open="historico">🗂 Histórico</button></div></div>
+          <div class="grid2">
+            <div class="card"><h3>Plan de seguridad</h3><p class="sub">Tenlo listo para los momentos difíciles.</p>
+              <div class="row"><button class="btn sm ghost" data-open="crisis">Abrir protocolo</button><button class="btn sm ghost" data-open="plan">Editar plan</button></div></div>
+            <div class="card"><h3>Ayuda verificada</h3><p class="sub">Aragón · España.</p>
+              <div class="row"><a class="btn sm danger" href="tel:024">024</a><a class="btn sm" href="tel:112">112</a>
+              <a class="btn sm ghost" href="tel:976232828">976 232 828</a></div></div>
+          </div>
+        </div>
+
+        <!-- DIARIO -->
+        <div class="view hide" data-v="diario">
+          <div class="card"><h2>Diario emocional</h2><p class="sub">Ánimo, ansiedad, sueño, energía y emociones. Alimenta el calendario, las gráficas, el informe y el histórico.</p>
+            <label>¿Cómo está tu ánimo hoy?</label><div class="moods" id="moodPick"></div>
+            <div class="grid4" style="margin-top:12px">
+              <div><label for="anx">Ansiedad <b id="anxV">5</b>/10</label><input type="range" id="anx" min="0" max="10" value="5"></div>
+              <div><label for="en">Energía <b id="enV">5</b>/10</label><input type="range" id="en" min="0" max="10" value="5"></div>
+              <div><label for="slp">Horas de sueño</label><input type="number" id="slp" min="0" max="16" step="0.5" placeholder="7"></div>
+              <div><label for="cig">Cigarrillos hoy</label><input type="number" id="cig" min="0" placeholder="0"></div></div>
+            <label>Emociones presentes</label><div class="tags" id="emoPick"></div>
+            <label for="dNote">Notas</label><textarea id="dNote" placeholder="¿Qué ha pasado? ¿Qué necesita tu cuerpo?"></textarea>
+            <div class="row" style="margin-top:10px"><button class="btn" id="dSave">Guardar entrada</button></div>
+            <div id="riskBox" class="warn hide" style="margin-top:12px" role="alert"><b>Detente un momento.</b> Parece que hoy lo estás pasando muy mal. No tienes que poder con todo a solas.
+              <div class="row" style="margin-top:8px"><a class="btn sm danger" href="tel:024">Llamar 024</a><a class="btn sm" href="tel:112">112</a>
+              <button class="btn sm ghost" data-open="crisis">Protocolo de calma</button></div></div></div>
+          <div class="card"><h3>Últimas entradas</h3><div class="list" id="dList"></div></div>
+        </div>
+
+        <!-- CALENDARIO -->
+        <div class="view hide" data-v="calendario">
+          <div class="card"><h2>📅 Calendario de días con depresión</h2>
+            <p class="sub">Marca cada día por <b>gravedad</b> y síntomas. El mapa de color muestra el patrón del mes para ti y tu terapeuta. <b>No diagnostica</b>: describe.</p>
+            <div class="calbar">
+              <div class="row"><button class="chip" id="calPrev" aria-label="Mes anterior">‹</button><span class="calTitle" id="calTitle"></span><button class="chip" id="calNext" aria-label="Mes siguiente">›</button></div>
+              <div class="row"><button class="chip" id="calToday">Hoy</button><select id="calJump" style="width:auto" aria-label="Ir a un mes"></select>
+                <button class="btn sm ghost" id="calExport">CSV del mes</button></div></div>
+            <div class="cal" id="calGrid"></div>
+            <div class="legend"><span><i style="background:var(--s0)"></i>Sin síntomas</span><span><i style="background:var(--s1)"></i>Leve</span>
+              <span><i style="background:var(--s2)"></i>Moderada</span><span><i style="background:var(--s3)"></i>Grave</span>
+              <span><i style="background:var(--s4)"></i>Muy grave / riesgo</span><span><i style="background:var(--bg)"></i>Sin dato</span></div>
+            <div id="calAlert" class="warn hide" style="margin-top:14px" role="alert"></div></div>
+          <div class="card"><h3>Resumen del mes</h3><div class="stats" id="depStats"></div><div id="depBars" style="margin-top:14px"></div></div>
+          <div class="card"><h3>Días registrados</h3><div class="list" id="depList"></div></div>
+        </div>
+
+        <!-- SALUD -->
+        <div class="view hide" data-v="salud">
+          <div class="card"><h2>❤️ Constantes vitales</h2>
+            <p class="sub">TA en mmHg y pulso en ppm. Normal &lt;120/80 · elevada 120‑129 · HTA g.1 130‑139/80‑89 · HTA g.2 ≥140/90.</p>
+            <div class="grid4">
+              <div><label for="vSys">Sistólica</label><input type="number" id="vSys" placeholder="120"></div>
+              <div><label for="vDia">Diastólica</label><input type="number" id="vDia" placeholder="80"></div>
+              <div><label for="vPpm">Pulso (ppm)</label><input type="number" id="vPpm" placeholder="72"></div>
+              <div><label for="vDate">Fecha y hora</label><input type="datetime-local" id="vDate"></div></div>
+            <div class="row" style="margin-top:10px"><button class="btn" id="vSave">Registrar</button></div>
+            <div class="stats" id="vStats" style="margin-top:14px"></div>
+            <div id="vAlert" class="warn hide" style="margin-top:12px" role="alert"></div></div>
+          <div class="card"><h2>🚬 Tabaquismo</h2><p class="sub">Índice tabáquico (<b>paquetes‑año</b>) = cigarrillos/día ÷ 20 × años fumando.</p>
+            <div class="grid4"><div><label for="sCig">Cigarrillos/día</label><input type="number" id="sCig" value="0"></div>
+              <div><label for="sYrs">Años fumando</label><input type="number" id="sYrs" value="0" step="0.5"></div>
+              <div><label for="sPrice">€ cajetilla</label><input type="number" id="sPrice" value="6.5" step="0.05"></div>
+              <div><label for="sQuit">Fecha de dejarlo</label><input type="date" id="sQuit"></div></div>
+            <div class="row" style="margin-top:10px"><button class="btn ghost" id="sSave">Calcular y guardar</button></div>
+            <div class="stats" id="sStats" style="margin-top:14px"></div></div>
+          <div class="card"><h2>🌑 Ideas autolíticas</h2>
+            <p class="sub">Grado según la escala ordinal <b>C‑SSRS</b> (Columbia, versión española) y frecuencia semanal. Sirve para que te ayuden mejor.</p>
+            <label>Grado</label><div class="moods" id="idePick"></div><div class="sub" id="ideDesc" style="min-height:26px"></div>
+            <div class="grid2"><div><label for="ideFreq">Episodios esta semana</label><input type="number" id="ideFreq" value="0"></div>
+              <div><label for="ideDate">Fecha</label><input type="date" id="ideDate"></div></div>
+            <label for="ideNote">Contexto / nota</label><textarea id="ideNote"></textarea>
+            <div class="row" style="margin-top:10px"><button class="btn" id="ideSave">Guardar</button></div>
+            <div id="ideAlert" class="warn hide" style="margin-top:12px" role="alert"></div></div>
+          <div class="card"><h2>📍 Ubicación y emergencia</h2>
+            <p class="sub">Solo si tú lo pulsas. La posición <b>no se envía a ningún servidor</b>: la usas para dictarla al 112 o enviarla a un contacto.</p>
+            <div class="row"><button class="btn ghost" id="geoGo">Obtener mi ubicación</button><button class="btn ghost" id="geoCopy">Copiar coordenadas</button>
+              <button class="btn ghost" id="geoShare">Compartir</button>
+              <label class="chip" style="cursor:pointer"><input type="checkbox" id="geoKeep" style="width:auto"> guardar en el registro</label></div>
+            <div id="geoOut" class="item hide" style="margin-top:12px"></div>
+            <div class="note" style="margin-top:12px">El 112 puede pedirte una referencia: tener lat/long y precisión acelera la localización. No lo actives en segundo plano ni lo envíes a desconocidos.</div>
+            <div class="row" style="margin-top:14px"><a class="btn" href="tel:112" id="btn112" style="font-size:1.15em;padding:14px 22px">🚨 LLAMAR AL 112</a>
+              <a class="btn danger" href="tel:024">024 · Conducta suicida</a><a class="btn ghost" href="tel:976232828">976 232 828 · Zaragoza</a></div>
+            <div class="row" style="margin-top:10px"><input type="text" id="sosMsg" style="flex:1" placeholder="Mensaje para contacto de confianza">
+              <button class="btn sm" id="sosSend">Preparar aviso</button></div></div>
+        </div>
+
+        <!-- MEDICACIÓN -->
+        <div class="view hide" data-v="medicacion">
+          <div class="card"><h2>💊 Control de medicación</h2>
+            <p class="sub">Nombres, dosis y momentos de toma (desayuno, comida, cena). <b>No sustituye</b> las indicaciones de tu médico: cualquier cambio de tratamiento consúltalo con él.</p>
+            <div class="grid4">
+              <div><label for="mName">Medicamento</label><input type="text" id="mName" placeholder="Ej. Sertralina"></div>
+              <div><label for="mDose">Dosis</label><input type="text" id="mDose" placeholder="Ej. 50 mg"></div>
+              <div><label for="mStart">Desde</label><input type="date" id="mStart"></div>
+              <div><label for="mEnd">Hasta (opcional)</label><input type="date" id="mEnd"></div></div>
+            <label>Momentos de toma</label><div class="tags" id="mSlots"></div>
+            <label for="mNote">Nota</label><input type="text" id="mNote" placeholder="Con o sin comida, precauciones…">
+            <div class="row" style="margin-top:10px"><button class="btn" id="mSave">Guardar</button>
+              <button class="btn ghost hide" id="mCancel">Cancelar edición</button>
+              <button class="btn ghost sm" id="mCsv">CSV de medicación</button></div>
+            <div class="list" id="mList" style="margin-top:14px"></div></div>
+          <div class="card"><h3>Control de hoy</h3>
+            <p class="sub">Marca cada toma al hacerla; con eso se calcula la <b>adherencia</b> que va al informe.</p>
+            <div id="mToday"></div><div class="stats" id="mStats" style="margin-top:14px"></div></div>
+        </div>
+
+        <!-- GRÁFICAS -->
+        <div class="view hide" data-v="graficos">
+          <div class="card"><h2>📈 Evolución</h2><p class="sub">Curvas calculadas <b>solo</b> con tus registros locales.</p>
+            <div class="row" style="justify-content:space-between">
+              <div class="tags" id="gMetrics"></div>
+              <select id="gRange" style="width:auto" aria-label="Rango temporal"><option value="30">30 días</option><option value="90">90 días</option><option value="180">6 meses</option><option value="365">1 año</option><option value="0">Todo</option></select></div>
+            <div id="gChart" style="margin-top:14px"></div>
+            <div class="stats" id="gStats" style="margin-top:14px"></div>
+            <div id="gTrend" class="note" style="margin-top:12px"></div></div>
+          <div class="card"><h3>📊 Progreso: periodo vs. periodo anterior</h3>
+            <p class="sub">Medias de los últimos 30 días frente a los 30 anteriores. En ánimo, energía y sueño <b>subir</b> es mejora; en el resto, <b>bajar</b> es mejora.</p>
+            <div id="progTable"></div><div style="margin-top:14px"><b>Ánimo medio por semana</b><div id="progWeeks"></div></div></div>
+          <div class="card"><h3>Comparativa (normalizada)</h3><p class="sub">Ánimo, ansiedad, depresión, ideación y tests en la misma escala 0‑100 para ver correlaciones.</p>
+            <div id="gCmp"></div></div>
+          <div class="card"><h3>Depresión por mes</h3><div id="gMonths"></div></div>
+        </div>
+
+        <!-- HISTÓRICO -->
+        <div class="view hide" data-v="historico">
+          <div class="card"><h2>🗂 Histórico por entradas</h2><p class="sub">Toda tu línea de tiempo: diario, depresión, medicación y tomas, ideación, constantes, TCC, tareas, citas, mensajes y cuestionarios.</p>
+            <div class="grid4">
+              <div><label for="hType">Tipo</label><select id="hType"><option value="">Todos</option></select></div>
+              <div><label for="hFrom">Desde</label><input type="date" id="hFrom"></div>
+              <div><label for="hTo">Hasta</label><input type="date" id="hTo"></div>
+              <div><label for="hQ">Buscar texto</label><input type="text" id="hQ" placeholder="insomnio, ansiedad, sertralina…"></div></div>
+            <div class="row" style="margin-top:12px"><button class="btn sm" id="hApply">Filtrar</button><button class="btn sm ghost" id="hCsv">Exportar CSV</button>
+              <button class="btn sm ghost" id="hClear">Quitar filtros</button><span class="meta" id="hCount"></span></div>
+            <div class="list" id="hList" style="margin-top:14px"></div></div>
+          <div class="card"><h3>Resumen por tipo</h3><div id="hAgg"></div></div>
+        </div>
+
+        <!-- INFORME -->
+        <div class="view hide" data-v="informe">
+          <div class="card no-print"><h2>🧪 Cuestionarios validados</h2>
+            <p class="sub"><b>PHQ‑9</b> (depresión, 9 ítems) y <b>GAD‑7</b> (ansiedad, 7 ítems) sobre las <b>últimas 2 semanas</b>. Instrumentos de autoinforme de uso libre: <b>no sustituyen</b> la entrevista clínica, pero sí miden el progreso.</p>
+            <div class="tags"><button class="tag on" id="tabPhq">PHQ‑9 · depresión</button><button class="tag" id="tabGad">GAD‑7 · ansiedad</button></div>
+            <div id="testItems" style="margin-top:12px"></div>
+            <div class="row" style="margin-top:12px"><button class="btn" id="testSave">Guardar test</button><span class="meta" id="testNow"></span></div>
+            <div id="testHist" style="margin-top:14px"></div></div>
+
+          <div class="card no-print"><h2>📄 Informe para la consulta</h2>
+            <p class="sub">Compone un documento con tus datos del periodo elegido y lo exportas a PDF.</p>
+            <div class="grid4">
+              <div><label for="rName">Tu nombre (opcional)</label><input type="text" id="rName"></div>
+              <div><label for="rProf">Profesional</label><input type="text" id="rProf"></div>
+              <div><label for="rCenter">Centro / servicio</label><input type="text" id="rCenter"></div>
+              <div><label for="rRange">Periodo</label><select id="rRange">
+                <option value="7">Últimos 7 días</option><option value="30" selected>Últimos 30 días</option>
+                <option value="90">Últimos 90 días</option><option value="180">Últimos 6 meses</option>
+                <option value="0">Todo el histórico</option></select></div></div>
+            <label>Qué incluir</label><div class="tags" id="rOpts"></div>
+            <label for="rNotes">Observaciones para el profesional</label>
+            <textarea id="rNotes" placeholder="Lo que quiero que vea en la consulta…"></textarea>
+            <div class="row" style="margin-top:12px"><button class="btn" id="rBuild">Vista previa</button>
+              <button class="btn danger" id="rPdf">🖨 Guardar PDF</button>
+              <button class="btn ghost" id="rCsv">CSV del informe</button></div>
+            <div class="note" style="margin-top:12px">En Windows/Linux, al imprimir marca <b>«Gráficos de fondo»</b> para que salgan los colores de gravedad. El PDF se guarda en tu dispositivo.</div></div>
+
+          <div class="card" id="repWrap"><div id="repDoc"><p class="sub">Pulsa «Vista previa» para componer el informe.</p></div></div>
+        </div>
+
+        <!-- TCC -->
+        <div class="view hide" data-v="tcc">
+          <div class="card"><h2>Registro de pensamientos (TCC)</h2><p class="sub">Reestructuración cognitiva guiada.</p>
+            <div class="grid2"><div><label for="tSit">Situación</label><input type="text" id="tSit"></div>
+              <div><label for="tEmo">Emoción + %</label><input type="text" id="tEmo" placeholder="Ansiedad 80%"></div>
+              <div><label for="tAuto">Pensamiento automático</label><textarea id="tAuto"></textarea></div>
+              <div><label for="tDist">Distorsión</label><select id="tDist"></select></div>
+              <div><label for="tPro">Evidencia a favor</label><textarea id="tPro"></textarea></div>
+              <div><label for="tCon">Evidencia en contra</label><textarea id="tCon"></textarea></div>
+              <div><label for="tAlt">Pensamiento alternativo</label><textarea id="tAlt"></textarea></div>
+              <div><label for="tRe">Emoción tras reevaluar (%)</label><input type="number" id="tRe" min="0" max="100" value="50"></div></div>
+            <div class="row" style="margin-top:10px"><button class="btn" id="tSave">Guardar ficha</button></div></div>
+          <div class="card"><h3>Tareas del psicólogo</h3>
+            <div class="grid2"><div><label for="taskT">Tarea</label><input type="text" id="taskT"></div><div><label for="taskD">Fecha límite</label><input type="date" id="taskD"></div></div>
+            <div class="row" style="margin-top:10px"><button class="btn sm" id="taskAdd">Añadir tarea</button></div>
+            <div class="list" id="taskList"></div></div>
+          <div class="card"><h3>Fichas guardadas</h3><div class="list" id="tList"></div></div>
+        </div>
+
+        <!-- CRISIS -->
+        <div class="view hide" data-v="crisis">
+          <div class="card"><h2>🛟 Protocolo de calma paso a paso</h2><p class="sub">Sigue los pasos en orden, sin prisa. Si hay peligro inmediato, llama al <b>112</b>.</p>
+            <div class="steps" id="crisisSteps"></div><div id="crisisBody"></div></div>
+          <div class="grid2">
+            <div class="card"><h3>Respiración guiada</h3><div class="breath" id="breath">Listo</div>
+              <div class="row"><button class="btn sm" data-b="478">4‑7‑8</button><button class="btn sm" data-b="box">Caja 4‑4‑4‑4</button><button class="btn sm ghost" id="bStop">Parar</button></div></div>
+            <div class="card"><h3>Grounding 5‑4‑3‑2‑1</h3><div id="ground"></div></div></div>
+          <div class="card"><h3>Ayuda inmediata</h3>
+            <div class="row"><a class="btn danger" href="tel:024">024 · 24 h</a><a class="btn" href="tel:112">112</a><a class="btn ghost" href="tel:976232828">Teléfono de la Esperanza · Zaragoza</a></div>
+            <div class="row" style="margin-top:10px"><button class="btn sm ghost" id="crisisGeo">📍 Añadir mi ubicación al aviso</button><span class="meta" id="crisisGeoOut"></span></div></div>
+        </div>
+
+        <!-- SESIÓN -->
+        <div class="view hide" data-v="sesion">
+          <div class="card"><h2>Sesión con tu profesional</h2><p class="sub">Videollamada cifrada + mensajería E2E.</p>
+            <label for="e2eKey">Clave de sesión compartida (la misma que tu terapeuta)</label><input type="password" id="e2eKey" placeholder="frase acordada, p. ej. girasol-aragon-2026">
+            <div class="row" style="margin-top:10px"><button class="btn" id="vcGo">🎥 Videollamada cifrada</button><button class="btn ghost" id="e2eSet">Activar cifrado del chat</button></div></div>
+          <div class="card"><h3>Chat con el profesional</h3>
+            <div id="chatBox" style="max-height:320px;overflow:auto;border:1px solid var(--line);border-radius:12px;padding:10px;background:var(--bg)"></div>
+            <div class="row" style="margin-top:10px"><input type="text" id="chatIn" placeholder="Escribe un mensaje…"><button class="btn" id="chatSend">Enviar</button>
+              <label class="chip" style="cursor:pointer"><input type="checkbox" id="simPro" style="width:auto"> simular terapeuta</label></div></div>
+          <div class="card"><h3>Agenda y recordatorios</h3>
+            <div class="grid2"><div><label for="apT">Cita</label><input type="text" id="apT"></div><div><label for="apD">Fecha y hora</label><input type="datetime-local" id="apD"></div></div>
+            <div class="row" style="margin-top:10px"><button class="btn sm" id="apAdd">Añadir cita</button></div>
+            <div class="list" id="apList"></div></div>
+        </div>
+
+        <!-- RECURSOS -->
+        <div class="view hide" data-v="recursos">
+          <div class="card"><h2>Recursos oficiales y validados</h2><p class="sub">Enlaces verificados; prioriza siempre fuentes oficiales.</p>
+            <h3>🇪🇸 Estatal</h3><div class="links" id="lEst"></div>
+            <h3 style="margin-top:14px">📍 Aragón / Zaragoza</h3><div class="links" id="lArag"></div>
+            <h3 style="margin-top:14px">🧘 Mindfulness y apoyo</h3><div class="links" id="lMind"></div></div>
+          <div class="card"><h3>Mindfulness guiado</h3><p class="sub">Pausa breve de atención plena.</p>
+            <div class="row"><button class="btn sm" id="mindGo">Comenzar (2 min)</button><span id="mindT" class="sub"></span></div></div>
+        </div>
+
+        <!-- PLAN -->
+        <div class="view hide" data-v="plan">
+          <div class="card"><h2>Mi plan de seguridad</h2><p class="sub">Redáctalo en un momento tranquilo.</p>
+            <label for="pSign">Señales de alarma que reconozco</label><textarea id="pSign"></textarea>
+            <label for="pStrat">Estrategias que me ayudan</label><textarea id="pStrat"></textarea>
+            <label for="pWhy">Motivos para seguir</label><textarea id="pWhy"></textarea>
+            <label for="pPeople">Personas de contacto (nombre + teléfono)</label><textarea id="pPeople"></textarea>
+            <div class="row" style="margin-top:10px"><button class="btn" id="pSave">Guardar plan</button></div></div>
+        </div>
+
+        <!-- PRIVACIDAD -->
+        <div class="view hide" data-v="privacidad">
+          <div class="card"><h2>Privacidad y control de datos</h2><p class="sub">Tus datos se quedan exclusivamente en tu dispositivo.</p>
+            <div id="pvInfo"></div>
+            <div class="row" style="margin-top:14px"><button class="btn ghost" id="pvExport">⬇ Exportar mis datos (JSON)</button>
+              <button class="btn ghost" id="pvExportCsv">⬇ Exportar histórico (CSV)</button><button class="btn danger" id="pvWipe">🗑 Borrar todo</button></div></div>
+        </div>
+
+      </section>
+    </main>
+    <footer>Re‑Late · Autoría: <b>Miguel Ángel Layunta López</b> · Zaragoza · Asociación de Enfermos de Rehabilitación Cardíaca</footer>
+  </div>
+</div>
+
+<button class="sos hide" id="sos" aria-label="Ayuda de emergencia">SOS</button>
+<div class="overlay" id="ov"><div class="sheet" id="ovSheet" role="dialog" aria-modal="true" aria-label="Diálogo"></div></div>
+<script src="app.js" defer></script>
+</body>
+</html>
